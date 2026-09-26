@@ -1,0 +1,90 @@
+# Initial development decisions — 2026-09-26
+
+## Authority and scope
+
+The [reviewed plan](https://github.com/lambdadb/sbrain/blob/628fdf77aaf36a4544c2083d11579525c95c9931/projects/lambdadb-postgresql-extension.md)
+remains the requirements and release-policy authority. The pinned file was read
+in full and compared with local sbrain `main`; that file had no differences.
+This record covers implementation choices and evidence for the bounded build
+spike requested on September 26. It does not close the first end-to-end milestone.
+
+## Confirmed requirements from the handoff
+
+- Extension/repository identifier: `pg_onesearch`; no required pgvector extension.
+- PostgreSQL retains original text/vectors; remote type I/O must not write data.
+- Both vector and BM25 belong in the first end-to-end PoC. BM25 separates match
+  from descending score projection. Each PG index owns independent remote resources.
+- Source changes and durable replay capture commit atomically in PostgreSQL.
+  Healthy commit responses wait for remote readiness, a verified Tag, and PG
+  publication. After PG commit, a remote failure returns success plus a sync
+  warning, preserves replay work, and blocks affected-index searches until recovery.
+- Strict reads must respect PG snapshots and own writes; no silent stale fallback.
+  Snapshot overlays and BM25 corpus/statistics correctness are acceptance gates.
+- Feature review into `develop`; release gates before promoting implementation
+  to `main`; independent extension versions and immutable release tags.
+
+The transaction requirements above are not implemented by this skeleton.
+
+## Selected for this spike
+
+| Choice | Decision and reason |
+| --- | --- |
+| Language | C with PostgreSQL-native PGXS: direct access to the IAM, transaction and worker APIs needed for the next spikes; fewer initial toolchain layers. This is an engineering selection under the current request, not a prior owner decision. Rust/pgrx was considered and is not selected for this spike. |
+| PG target | PostgreSQL 18.6, PGDG `18.6-1.pgdg12+2`; official stable minor release verified in [release notes](https://www.postgresql.org/docs/release/18.6/). No claim of other major-version compatibility. |
+| OS / CPU | Debian 12 / Linux arm64, matching the working Docker host architecture. Ubuntu and x86_64 in the plan were examples, not commitments. Native macOS binaries are not validated. |
+| Toolchain | GCC 12.2.0 (`12.2.0-14+deb12u1`), GNU Make 4.3, Clang/LLVM 19.1.7 (`1:19.1.7-3~deb12u1`) for PGXS bitcode. Dockerfile pins those packages, PG headers, and the base-image digest. Transitive apt dependencies remain repository-resolved; this is not a bit-reproducible release build. |
+| Namespace | Fixed `onesearch` schema; `onesearch.vector(n)`, `onesearch.cosine_distance(a,b)`, `OPERATOR(onesearch.<=>)`. Explicit qualification avoids dependence on application search_path. Development API, subject to review before a release. |
+| Development version | `0.1.0-dev` in control/install SQL. No published version, release tag, upgrade SQL, or backward-compatibility promise. |
+| Repository | Local `main`/`develop` bootstrap with the original README, feature implementation in `feature/installable-skeleton`. No direct implementation promotion to either long-lived branch. Remote visibility, protections, license, and CI remain pending. |
+
+Build conventions follow [PGXS](https://www.postgresql.org/docs/18/extend-pgxs.html)
+and the [PG type interface](https://www.postgresql.org/docs/18/xtypes.html).
+No pgvector source was copied. The development host had Clang 21, Make, Docker
+29.8.0 with a working Linux arm64 daemon, Homebrew, and authenticated GitHub CLI;
+`pg_config`, `psql`, `cargo`, and `rustc` were absent from PATH. Host PostgreSQL
+and host services were not installed or changed.
+
+## Implemented local SQL/value contract
+
+- 2–4096 finite float32 components; `vector(n)` enforces dimensions on input,
+  typed-value assignment, explicit casts, and binary protocol binding.
+- Bracketed comma-separated text, with whitespace and exponent notation.
+  Components use PG float4 parsing/rounding; overflow and underflow-to-zero are
+  rejected. Finite representable subnormals are accepted.
+- Output uses shortest round-tripping float32 text independent of
+  `extra_float_digits`. Text output canonicalizes number spelling.
+- Experimental binary format: network-endian signed int32 dimension followed by
+  exactly that many network-endian IEEE float32 values. This is our format, not
+  a pgvector binary-compatibility claim. Truncation, trailing bytes, bad dimensions,
+  and non-finite components are rejected.
+- Variable-length, int4-aligned storage with TOAST `external`; originals stay in PG.
+- NULL inputs return NULL. Zero vectors can be stored, but cosine involving one
+  raises SQLSTATE `22000`. Non-finite elements and dimension mismatch also use
+  `22000`; invalid dimensions use `22023`. PG parser/protocol errors retain their
+  native SQLSTATEs. These choices apply only to this development type.
+- Cosine distance is `1 - dot(a,b)/(norm(a)*norm(b))`, accumulated in float64 and
+  clamped to [0,2] for floating-point roundoff. Lower is closer. Ties require an
+  application tie-breaker (for example `ORDER BY distance, id`). No ANN behavior.
+- No access method, opclass, remote index, BM25 stub, outbox, hook, or background
+  worker is registered. Ordinary PG value/table transactions work normally;
+  they provide no evidence for the planned cross-system transaction protocol.
+- Installation requires superuser; ordinary roles receive schema usage and can
+  use the functions/type with normal table permissions. There is no preload step.
+
+## Unresolved decisions and next executable gates
+
+| Area | Required next evidence |
+| --- | --- |
+| First E2E milestone | Both remote vector and BM25 indexes, actual index plans, mutation/search reference comparisons, source retention across index lifecycle. BM25 remains in this milestone. |
+| BM25 SQL | Match/score signatures, index/query binding, rescans/joins/ties, analyzer and corpus-statistics contract, behavior without an eligible remote plan. |
+| Commit response | A lock-safe post-commit completion point for autocommit and explicit COMMIT; cancellation and client warning/success ordering. Do not wait on workers inside an unproven commit callback. |
+| Outbox/worker | Atomic capture, savepoints, fenced ordered replay, late smaller IDs, idempotency, readiness barrier, atomic publication/deletion, retention/backpressure and fault tests. |
+| Reads/health | Same-snapshot Tag and delta, own writes, old snapshots, per-index outage guard for cached plans/rescans, recovery races. |
+| Remote protocol | Deployed LambdaDB environment, capability verification, cosine score mapping, continuation beyond rejected candidates, BM25 overlay/statistics, reusable API proposals. No credentials were needed or used here. |
+| Identity/lifecycle | Source epochs/index generations, PK/TID/version mapping, HOT/pruning/VACUUM/TID reuse, builds/rebuilds/cleanup and restore fencing. |
+| Release | Maintainer, remote repository visibility, license, PR checks/protection, numerical SLOs, pilot workload, compatibility/upgrade formats and distribution policy. |
+
+Next work should combine the commit-response/worker feasibility experiment with
+concrete vector and BM25 execution contracts. No broader transaction, remote
+recovery, performance, managed-provider, or production-support claim follows
+from the local skeleton tests.

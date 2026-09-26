@@ -1,0 +1,7 @@
+comment = 'Development skeleton: PostgreSQL-owned float32 vectors and local cosine distance'
+default_version = '0.1.0-dev'
+module_pathname = '$libdir/pg_onesearch'
+relocatable = false
+schema = 'onesearch'
+superuser = true
+trusted = false
