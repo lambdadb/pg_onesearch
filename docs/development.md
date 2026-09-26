@@ -35,7 +35,7 @@ The transaction requirements above are not implemented by this skeleton.
 | Toolchain | GCC 12.2.0 (`12.2.0-14+deb12u1`), GNU Make 4.3, Clang/LLVM 19.1.7 (`1:19.1.7-3~deb12u1`) for PGXS bitcode. Dockerfile pins those packages, PG headers, and the base-image digest. Transitive apt dependencies remain repository-resolved; this is not a bit-reproducible release build. |
 | Namespace | Fixed `onesearch` schema; `onesearch.vector(n)`, `onesearch.cosine_distance(a,b)`, `OPERATOR(onesearch.<=>)`. Explicit qualification avoids dependence on application search_path. Development API, subject to review before a release. |
 | Development version | `0.1.0-dev` in control/install SQL. No published version, release tag, upgrade SQL, or backward-compatibility promise. |
-| Repository | Local `main`/`develop` bootstrap with the original README, feature implementation in `feature/installable-skeleton`. No direct implementation promotion to either long-lived branch. Remote visibility, protections, license, and CI remain pending. |
+| Repository | Local `main`/`develop` bootstrap with the original README, feature implementation in `feature/installable-skeleton`. No direct implementation promotion to either long-lived branch. Public GitHub repository approved; existing organization rulesets govern branches without repository-level rule changes. GitHub Actions runs the same Docker tests and clean-install check on pull requests. License selection remains pending. |
 
 Build conventions follow [PGXS](https://www.postgresql.org/docs/18/extend-pgxs.html)
 and the [PG type interface](https://www.postgresql.org/docs/18/xtypes.html).
@@ -82,7 +82,7 @@ and host services were not installed or changed.
 | Reads/health | Same-snapshot Tag and delta, own writes, old snapshots, per-index outage guard for cached plans/rescans, recovery races. |
 | Remote protocol | Deployed LambdaDB environment, capability verification, cosine score mapping, continuation beyond rejected candidates, BM25 overlay/statistics, reusable API proposals. No credentials were needed or used here. |
 | Identity/lifecycle | Source epochs/index generations, PK/TID/version mapping, HOT/pruning/VACUUM/TID reuse, builds/rebuilds/cleanup and restore fencing. |
-| Release | Maintainer, remote repository visibility, license, PR checks/protection, numerical SLOs, pilot workload, compatibility/upgrade formats and distribution policy. |
+| Release | Maintainer, license, numerical SLOs, pilot workload, compatibility/upgrade formats and distribution policy. Repository visibility is public; branch rulesets remain organization-managed. |
 
 Next work should combine the commit-response/worker feasibility experiment with
 concrete vector and BM25 execution contracts. No broader transaction, remote

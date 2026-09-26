@@ -79,7 +79,7 @@ published release. Do not replace binaries in a running production database.
 
 ## Design and development status
 
-Read the complete [reviewed design and release plan](https://github.com/lambdadb/sbrain/blob/628fdf77aaf36a4544c2083d11579525c95c9931/projects/lambdadb-postgresql-extension.md).
+Maintainer background: the [reviewed design and release plan](https://github.com/lambdadb/sbrain/blob/628fdf77aaf36a4544c2083d11579525c95c9931/projects/lambdadb-postgresql-extension.md).
 The [canonical plan on main](https://github.com/lambdadb/sbrain/blob/main/projects/lambdadb-postgresql-extension.md)
 was merged through [PR #52](https://github.com/lambdadb/sbrain/pull/52) as `681ed6b`.
 Its provisional extension name `lambdadb` is superseded by Steven's selected
@@ -89,7 +89,15 @@ record does not replace or edit that canonical plan.
 - [Implementation choices, confirmed requirements, and unresolved gates](docs/development.md)
 - [Actual validation evidence and limitations](docs/validation.md)
 
-The local repository has `main` and `develop` at the initial handoff commit;
-implementation is on `feature/installable-skeleton` for review into `develop`.
-`main` is reserved for release-validated implementation. No remote repository,
-branch protection, hosted CI, release tag, or public distribution is configured.
+The public source repository is [lambdadb/pg_onesearch](https://github.com/lambdadb/pg_onesearch).
+Feature PRs target `develop`; `main` is reserved for release-validated
+implementation. Branch rulesets are managed by the LambdaDB organization.
+
+[CI](https://github.com/lambdadb/pg_onesearch/actions/workflows/ci.yml) builds and
+tests the arm64 Docker target, verifies clean bundle installation, and retains
+the tested evaluation bundle, checksum, source revision, and build environment
+for 14 days. CI artifacts are development outputs, not published releases.
+The source-linked sbrain plan may require organization access; the local
+implementation and validation documents above describe the public skeleton.
+No release tag or stable distribution has been published; license selection
+remains open.
