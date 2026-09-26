@@ -23,7 +23,9 @@ spike requested on September 26. It does not close the first end-to-end mileston
 - Feature review into `develop`; release gates before promoting implementation
   to `main`; independent extension versions and immutable release tags.
 
-The transaction requirements above are not implemented by this skeleton.
+The transaction requirements above are not implemented by the product skeleton.
+The separate [commit/worker probe](commit-worker-spike.md) now provides bounded
+feasibility evidence; it is not the production synchronization implementation.
 
 ## Selected for this spike
 
@@ -35,7 +37,7 @@ The transaction requirements above are not implemented by this skeleton.
 | Toolchain | GCC 12.2.0 (`12.2.0-14+deb12u1`), GNU Make 4.3, Clang/LLVM 19.1.7 (`1:19.1.7-3~deb12u1`) for PGXS bitcode. Dockerfile pins those packages, PG headers, and the base-image digest. Transitive apt dependencies remain repository-resolved; this is not a bit-reproducible release build. |
 | Namespace | Fixed `onesearch` schema; `onesearch.vector(n)`, `onesearch.cosine_distance(a,b)`, `OPERATOR(onesearch.<=>)`. Explicit qualification avoids dependence on application search_path. Development API, subject to review before a release. |
 | Development version | `0.1.0-dev` in control/install SQL. No published version, release tag, upgrade SQL, or backward-compatibility promise. |
-| Repository | Local `main`/`develop` bootstrap with the original README, feature implementation in `feature/installable-skeleton`. No direct implementation promotion to either long-lived branch. Public GitHub repository approved; existing organization rulesets govern branches without repository-level rule changes. GitHub Actions runs the same Docker tests and clean-install check on pull requests. License selection remains pending. |
+| Repository | `main` is the release branch; `develop` contains the reviewed skeleton from PR #1. Further work uses feature PRs into `develop`. Public GitHub repository approved; existing organization rulesets govern branches without repository-level rule changes. GitHub Actions runs the same Docker tests and clean-install check on pull requests. License selection remains pending. |
 
 Build conventions follow [PGXS](https://www.postgresql.org/docs/18/extend-pgxs.html)
 and the [PG type interface](https://www.postgresql.org/docs/18/xtypes.html).
@@ -77,14 +79,14 @@ and host services were not installed or changed.
 | --- | --- |
 | First E2E milestone | Both remote vector and BM25 indexes, actual index plans, mutation/search reference comparisons, source retention across index lifecycle. BM25 remains in this milestone. |
 | BM25 SQL | Match/score signatures, index/query binding, rescans/joins/ties, analyzer and corpus-statistics contract, behavior without an eligible remote plan. |
-| Commit response | A lock-safe post-commit completion point for autocommit and explicit COMMIT; cancellation and client warning/success ordering. Do not wait on workers inside an unproven commit callback. |
+| Commit response | The separate probe validates an AFTER_LOCKS candidate for specific PG18.6 schedules, including cancellation. Execute+Flush can deliver CommandComplete before commit; finalize protocol scope and audit cleanup-phase safety before adopting the candidate. See [evidence](commit-worker-spike.md). |
 | Outbox/worker | Atomic capture, savepoints, fenced ordered replay, late smaller IDs, idempotency, readiness barrier, atomic publication/deletion, retention/backpressure and fault tests. |
 | Reads/health | Same-snapshot Tag and delta, own writes, old snapshots, per-index outage guard for cached plans/rescans, recovery races. |
 | Remote protocol | Deployed LambdaDB environment, capability verification, cosine score mapping, continuation beyond rejected candidates, BM25 overlay/statistics, reusable API proposals. No credentials were needed or used here. |
 | Identity/lifecycle | Source epochs/index generations, PK/TID/version mapping, HOT/pruning/VACUUM/TID reuse, builds/rebuilds/cleanup and restore fencing. |
 | Release | Maintainer, license, numerical SLOs, pilot workload, compatibility/upgrade formats and distribution policy. Repository visibility is public; branch rulesets remain organization-managed. |
 
-Next work should combine the commit-response/worker feasibility experiment with
-concrete vector and BM25 execution contracts. No broader transaction, remote
-recovery, performance, managed-provider, or production-support claim follows
+Next work should resolve the protocol scope and production suitability of the
+AFTER_LOCKS candidate, then specify concrete vector and BM25 execution contracts.
+No broader transaction, remote recovery, performance, managed-provider, or production-support claim follows
 from the local skeleton tests.

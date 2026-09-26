@@ -88,15 +88,21 @@ record does not replace or edit that canonical plan.
 
 - [Implementation choices, confirmed requirements, and unresolved gates](docs/development.md)
 - [Actual validation evidence and limitations](docs/validation.md)
+- [Commit/worker feasibility experiment and protocol limitations](docs/commit-worker-spike.md)
+
+Run `./scripts/test-commit-worker.sh` for the isolated commit/worker experiment.
+It compiles a separate test-only module in a disposable container. That module
+is not installed by `CREATE EXTENSION pg_onesearch` or included in its evaluation
+bundle; the product skeleton still has no outbox or background worker.
 
 The public source repository is [lambdadb/pg_onesearch](https://github.com/lambdadb/pg_onesearch).
 Feature PRs target `develop`; `main` is reserved for release-validated
 implementation. Branch rulesets are managed by the LambdaDB organization.
 
 [CI](https://github.com/lambdadb/pg_onesearch/actions/workflows/ci.yml) builds and
-tests the arm64 Docker target, verifies clean bundle installation, and retains
-the tested evaluation bundle, checksum, source revision, and build environment
-for 14 days. CI artifacts are development outputs, not published releases.
+tests the arm64 Docker target and commit/worker probe, verifies clean bundle
+installation, and retains the tested evaluation bundle, checksum, source
+revision, build environment, and probe log for 14 days. CI artifacts are development outputs, not published releases.
 The source-linked sbrain plan may require organization access; the local
 implementation and validation documents above describe the public skeleton.
 No release tag or stable distribution has been published; license selection
