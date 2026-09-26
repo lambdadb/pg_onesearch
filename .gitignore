@@ -6,3 +6,8 @@
 /regression.out
 /artifacts/
 .DS_Store
+
+# Local connection settings and credentials.
+.env
+.env.*
+!.env.example
