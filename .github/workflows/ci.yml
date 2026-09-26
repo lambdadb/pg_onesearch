@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  skeleton:
+    name: PG18.6 / Debian12 / arm64
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build, install, and test
+        run: ./scripts/test.sh
+      - name: Build evaluation bundle
+        run: ./scripts/package.sh
+      - name: Install bundle on clean PostgreSQL runtime
+        run: ./scripts/test-package.sh
+      - name: Record build inputs
+        run: |
+          git rev-parse HEAD > artifacts/source-revision.txt
+          docker image inspect pg_onesearch:0.1.0-dev --format '{{.Id}}' > artifacts/image-id.txt
+          docker run --rm --network none --entrypoint sh pg_onesearch:0.1.0-dev \
+            -c 'pg_config --version; gcc --version; dpkg-query -W' > artifacts/build-environment.txt
+      - name: Upload tested evaluation bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pg_onesearch-pg18.6-debian12-arm64-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 14

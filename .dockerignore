@@ -1,0 +1,7 @@
+.git
+*.o
+*.so
+*.bc
+results
+regression.*
+artifacts

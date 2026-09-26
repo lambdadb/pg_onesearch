@@ -1,0 +1,2 @@
+# pg_regress fixtures preserve psql's aligned-output padding.
+test/expected/*.out whitespace=-blank-at-eol
