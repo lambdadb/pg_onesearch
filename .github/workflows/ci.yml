@@ -29,6 +29,10 @@ jobs:
         run: |
           set -o pipefail
           ./scripts/test-commit-worker.sh 2>&1 | tee /tmp/pg_onesearch-commit-worker.log
+      - name: Actual psql and Psycopg client contract
+        run: |
+          set -o pipefail
+          ./scripts/test-client-contract.sh 2>&1 | tee /tmp/pg_onesearch-client-contract.log
       - name: Build evaluation bundle
         run: ./scripts/package.sh
       - name: Install bundle on clean PostgreSQL runtime
@@ -37,6 +41,7 @@ jobs:
         run: |
           git rev-parse HEAD > artifacts/source-revision.txt
           cp /tmp/pg_onesearch-commit-worker.log artifacts/commit-worker-probe.log
+          cp /tmp/pg_onesearch-client-contract.log artifacts/client-contract.log
           docker image inspect pg_onesearch:0.1.0-dev --format '{{.Id}}' > artifacts/image-id.txt
           docker run --rm --network none --entrypoint sh pg_onesearch:0.1.0-dev \
             -c 'pg_config --version; gcc --version; dpkg-query -W' > artifacts/build-environment.txt
