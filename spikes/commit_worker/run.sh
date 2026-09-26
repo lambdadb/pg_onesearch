@@ -21,4 +21,5 @@ max_prepared_transactions = 10
 CONF
 gosu postgres pg_ctl -l "$PGDATA/server.log" -w start
 gosu postgres psql -X -v ON_ERROR_STOP=1 -f spikes/commit_worker/setup.sql
-gosu postgres python3 -u spikes/commit_worker/test.py
+# Optional interpreter/test path lets driver tests reuse this exact PG fixture.
+gosu postgres "${1:-python3}" -u "${2:-spikes/commit_worker/test.py}"
