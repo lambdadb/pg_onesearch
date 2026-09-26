@@ -4,7 +4,8 @@
 
 Local Docker build, PGXS installation, SQL regression, actual libpq extended
 protocol, binary COPY, logical dump/restore, and clean-runtime bundle installation
-passed on PostgreSQL 18.6 / Debian 12 / Linux arm64. No hosted CI was run.
+passed on PostgreSQL 18.6 / Debian 12 / Linux arm64. The initial local
+validation recorded below preceded hosted CI setup.
 This proves the local value-type skeleton only. The reviewed design's full
 end-to-end or transaction acceptance criteria are not marked complete.
 
@@ -75,5 +76,16 @@ bit-for-bit release reproducibility remains unproven.
 Remote vector/BM25 queries, IAM/opclasses, live LambdaDB compatibility, replay,
 worker fencing, Tag readiness/publication, post-commit response integration,
 snapshot overlays, remote outage behavior, fault recovery, performance, upgrades,
-other PG majors/OS/CPU targets, and hosted CI/release distribution remain open.
+other PG majors/OS/CPU targets, and release distribution remain open.
 See [implementation decisions](development.md) for the next executable gates.
+
+## GitHub CI follow-up
+
+The public repository now includes a [CI workflow](../.github/workflows/ci.yml)
+that runs the same tests plus bundle installation on an `ubuntu-24.04-arm`
+hosted runner. The extension build/runtime target remains Debian 12 / arm64
+inside Docker. Current execution results are attached to
+[PR #1](https://github.com/lambdadb/pg_onesearch/pull/1/checks); adding the workflow
+is separate from a passing run. Each successful run uploads its tested bundle,
+checksum, tested source revision, local image ID, and package inventory. These
+are evaluation artifacts, not a GitHub Release or production certification.
