@@ -108,7 +108,21 @@ These bounded tests do not prove cancellation latency for every DNS/TLS/library
 failure or complete absence of native-memory leaks. They do not establish a
 production connection pool or cross-backend credential isolation.
 
-Live results will be recorded separately after the opt-in run. Planner hooks,
+The [live evidence record](evidence/remote-read-2026-09-27.json) records a passed
+run on September 27, 2026, 09:22:36–09:24:42 UTC. Both C query executions per
+modality matched the Python reference's IDs and scores on the same immutable
+Tag: five vector hits and three BM25 hits. The marker-to-verified-Tag waits were
+64.736 and 58.134 seconds, respectively; these are fixture observations, not an
+SLO. Both collections and their Tags were removed and collection absence was
+confirmed by the existing cleanup procedure.
+
+The run began with uncommitted code on `b927a30`; every recorded probe source
+hash was subsequently verified against commit `b10ea05` and the test image.
+The evidence preserves that distinction and does not pin a backend deployment
+revision. The existing local vector regression, 33 protocol cases, dump/restore,
+and clean evaluation-bundle installation also passed.
+
+Planner hooks,
 IAM/CustomScan selection, execution-local BM25 score binding, PG row visibility,
 own writes, response downloads, ranked continuation, writes/outbox/fencing, and
 Tag publication are still unimplemented by this candidate. In particular, a

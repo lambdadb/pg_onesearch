@@ -1,0 +1,150 @@
+{
+  "run_id": "0c1bf42020b94a809ae74d80ad1841ab",
+  "started_at": "2026-09-27T09:22:36.523743+00:00",
+  "status": "passed",
+  "source_revision": "b927a30c80793206bddc9f6b49780bd40a1542e1",
+  "worktree_dirty": true,
+  "image_id": "sha256:2d039fa6acb9cad279c43814290074e201b7ffbddd47dc73b5ecd88ed045b4d1",
+  "files_sha256": {
+    "spikes/remote_read/Dockerfile": "d12d890a4f75d3d3c1494723c877521c46426e127cb3579cf359d8fb588c4da0",
+    "spikes/remote_read/Makefile": "dadb557e7ef821a419d32aa6a5620368d5cbd2b6fdcbf47d6fbbda2586ddb90d",
+    "spikes/remote_read/bootstrap.py": "2124de7bad4fa5a41fc19a5961ffeb4e4eccc623e42ff519c0ecd0e6432cb39f",
+    "spikes/remote_read/http.c": "32c34284115cf48df7652697129bd0b919e72451eef69901e0de7d3bc56336a4",
+    "spikes/remote_read/http.h": "861f8754dd64212b6414987df5b9a7472c2119f98c2674abccb0cbc1d991cfba",
+    "spikes/remote_read/live.py": "2859af3840c2c371349c95ffdce1dd7422f2ee0c68c88e855b02edd6737591f3",
+    "spikes/remote_read/offline.py": "c22b56dda81f50c26ab9a546390539c5f74637b9850ed310b589913d1dadddbe",
+    "spikes/remote_read/probe.c": "e8ee8abaf9586d1944079d193483a64fba70c1d4196b8f15f783cb799cdc4ef4",
+    "spikes/remote_read/run.sh": "cdff31eb587037670f4f3605f7d726a019b76336a388ed55d5beb69efd2a4a90",
+    "spikes/remote_read/run_live.py": "95e00cbc1dc68106b6614c341a9efe665b858523d522fe167bae3cdd054d580c",
+    "spikes/remote_read/setup.sql": "e1ceffdd8d18552f4d63dd733a010de372d2b6d3e1efe72f346a5be4b5589988"
+  },
+  "checks": [
+    {
+      "name": "vector: create independent collection"
+    },
+    {
+      "name": "vector: indexed marker then verified Tag (c-read)",
+      "attempts": 32,
+      "elapsed_seconds": 64.736,
+      "snapshot_id": "e11ea019-8a85-4fb7-bfeb-7df06c01e043",
+      "marker_revision": "0c1bf42020b94a809ae74d80ad1841ab-c-read"
+    },
+    {
+      "name": "bm25: create independent collection"
+    },
+    {
+      "name": "bm25: indexed marker then verified Tag (c-read)",
+      "attempts": 29,
+      "elapsed_seconds": 58.134,
+      "snapshot_id": "f1622d2b-0033-46da-b1b1-403e9a887b8a",
+      "marker_revision": "0c1bf42020b94a809ae74d80ad1841ab-c-read"
+    }
+  ],
+  "writes": [
+    {
+      "collection": "pgos-live-0c1bf42020b94a809ae7-vector",
+      "operation": "upsert",
+      "batch_sizes": [
+        5
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-0c1bf42020b94a809ae7-vector",
+      "operation": "upsert",
+      "batch_sizes": [
+        1
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-0c1bf42020b94a809ae7-bm25",
+      "operation": "upsert",
+      "batch_sizes": [
+        5
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-0c1bf42020b94a809ae7-bm25",
+      "operation": "upsert",
+      "batch_sizes": [
+        1
+      ],
+      "ack_status": 202
+    }
+  ],
+  "resources": [
+    {
+      "name": "pgos-live-0c1bf42020b94a809ae7-vector",
+      "role": "vector",
+      "tags": [
+        "checkpoint-c-read"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true
+    },
+    {
+      "name": "pgos-live-0c1bf42020b94a809ae7-bm25",
+      "role": "bm25",
+      "tags": [
+        "checkpoint-c-read"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true
+    }
+  ],
+  "c_read": {
+    "status": "passed",
+    "checks": [
+      {
+        "role": "vector",
+        "execution": 1,
+        "documents": 5,
+        "scores": {
+          "d1": 1.0,
+          "d5": 1.0,
+          "d2": 0.9,
+          "d3": 0.5,
+          "d4": 0.0
+        }
+      },
+      {
+        "role": "vector",
+        "execution": 2,
+        "documents": 5,
+        "scores": {
+          "d1": 1.0,
+          "d5": 1.0,
+          "d2": 0.9,
+          "d3": 0.5,
+          "d4": 0.0
+        }
+      },
+      {
+        "role": "bm25",
+        "execution": 1,
+        "documents": 3,
+        "scores": {
+          "d1": 0.33023855,
+          "d5": 0.33023855,
+          "d2": 0.20845169
+        }
+      },
+      {
+        "role": "bm25",
+        "execution": 2,
+        "documents": 3,
+        "scores": {
+          "d1": 0.33023855,
+          "d5": 0.33023855,
+          "d2": 0.20845169
+        }
+      }
+    ]
+  },
+  "finished_at": "2026-09-27T09:24:42.210246+00:00",
+  "verified_source_commit": "b10ea05a9ffbcc97aad012ba3a4018dcc65af3c5",
+  "raw_report_sha256": "0b19fb9fe21c44725dcd6d02275319fe7039e764409881d9e037e528c79d4f0e",
+  "evidence_note": "Run began on a dirty worktree at source_revision; all recorded probe files match verified_source_commit and the pinned test image. No backend deployment revision is pinned."
+}
