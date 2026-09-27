@@ -1,0 +1,561 @@
+{
+  "run_id": "e4f08ae7c5ec4131b34c5cb8c1a4ed24",
+  "started_at": "2026-09-27T12:25:14.452458+00:00",
+  "status": "passed",
+  "source_revision": "adb9b2632d385ddf293d4fd1bec81077d2412067",
+  "worktree_dirty": false,
+  "image_id": "sha256:98ff9782d19a49de6e5c01f668c7ffa147c0881c3804ddb4b099502c6e72a7e5",
+  "files_sha256": {
+    "spikes/remote_read/Dockerfile": "fc9626213234a7a2418f0aa68e9b729850f3d76c9fa28526de174badb55d2233",
+    "spikes/remote_read/Makefile": "d25a7cc2d8a9887be802d4cb4e69f21819b2291c45ec94d37ea744ae984094c7",
+    "spikes/remote_read/bootstrap.py": "2124de7bad4fa5a41fc19a5961ffeb4e4eccc623e42ff519c0ecd0e6432cb39f",
+    "spikes/remote_read/http.c": "9b7c9de979695137ca0637919510306e89e552a3c0c20ad676099f747731e16b",
+    "spikes/remote_read/http.h": "5f3ffd58516c882cfeb7e6d5dfdaf915934e839be519f14a154a501f42818a5e",
+    "spikes/remote_read/live.py": "c08e456b075da90fbd97515359649f782e540d9bba5e853eceba4c760836cfd4",
+    "spikes/remote_read/offline.py": "a293c843ff39a429ff8e1f73b47fefdfdbec5c62700b829bb5eeb75e219784c4",
+    "spikes/remote_read/probe.c": "4bfab1da3b83753757a8112eed0298cdfc441c6e2f1600ab653192db190cbc1b",
+    "spikes/remote_read/run.sh": "cdff31eb587037670f4f3605f7d726a019b76336a388ed55d5beb69efd2a4a90",
+    "spikes/remote_read/run_live.py": "42344c02b413ddcfa5098a516ee79538e9140eea8666a4291506d360f0d778e6",
+    "spikes/remote_read/setup.sql": "e1ceffdd8d18552f4d63dd733a010de372d2b6d3e1efe72f346a5be4b5589988",
+    "spikes/index_lifecycle/Dockerfile": "d091460eda7747a584bf4f2e41086c384ad888f1b5700048af8c7912478f9016",
+    "spikes/index_lifecycle/Makefile": "a9ae16194fcb194171982a197cbd3a7396b0f8cd20d6efa07a79e77bd804e730",
+    "spikes/index_lifecycle/lifecycle.c": "b566179cbdb6152494d879eaa24c66b3225605974d4fd01557c10596b05bc927",
+    "spikes/index_lifecycle/run.sh": "90152f4fa9f6748e3c7e85c5e04f4e6dbcfc930675cc58c8e5b9393bf8e22c35",
+    "spikes/index_lifecycle/setup.sql": "9d016efa91cc08b06e767740e22da09cfdfed69598219277048ffd1ee7e77c48",
+    "spikes/index_lifecycle/test.py": "8c8d0b01b092258756dedff87c8bf4b018b2012cc8e2a3be1fd9fa7fe42bb88b",
+    "spikes/change_capture/Dockerfile": "d802a7a67fed4e90439c3383b5b5b1839ac87cab90f11c9a3491ce32c124b809",
+    "spikes/change_capture/run.sh": "2eeacd4307fbb5acbd90fd3bbd2b34d70858b3ec809f5af7d2a625f882c3112b",
+    "spikes/change_capture/setup.sql": "e129b571cdad82ea934863a51a89224eac951624c217f767b785e19bfcb0b395",
+    "spikes/change_capture/test.py": "c57e416a1825dd0421a0b982f767ed46c936b75bca2322b3a4d398c65e51354e",
+    "spikes/batch_replay/Dockerfile": "0ee8190df81feb64e08dc9d61fc31d01d3199b902f8cd9943ef3c80575aa2b1b",
+    "spikes/batch_replay/bootstrap.py": "effea427458ba661e6d2d26b47604646f2fe66ddbc9e3e2f09a2c8a5c0a4fef8",
+    "spikes/batch_replay/live.py": "35de319af141ff7a4505707085e95b3d04b93158c1d2bf82cbf4946434eddaf1",
+    "spikes/batch_replay/run.sh": "a8cc270db69a9fa1269d5c5da328e14e32e2231695be843986c5f1bf9a2c4e80",
+    "spikes/batch_replay/run_live.py": "1337253647ec3dc98a31f06710a502f8af0faefd15056ee5a89a2b7465381d55",
+    "spikes/batch_replay/setup.sql": "9820120f9029872e15b196c23c8f3ba0154a7d09ffbfeefa99de1e39ce1e4188",
+    "spikes/batch_replay/test.py": "ab7995cc4e9d404bf855835ef9614b9f786e97e234fc38aeef8f98f2778debc2",
+    "spikes/batch_replay/worker.py": "6cfd2554e52b884ac35b0910789e83a866ae352c4a581d270d35f47d9684289c",
+    "spikes/live_compatibility/client.py": "c6d2c25a2ac77d6b39faf6860ed9a1abc69b0852888197cb5ff859504e7bfb83",
+    "spikes/live_compatibility/run.py": "c734a81bf9ae5f475c0453b9cd52c21f564e960b74a47499f1a1c48ccbf1804f",
+    "spikes/live_compatibility/test_offline.py": "6a0f87175a881946c336e8e94e984050bd1a2167b980ad702f02168de6920bb2",
+    "spikes/snapshot_read/Dockerfile": "9b2f06a47ab616937debeb9d45659dd672f42d1c898c8ed5d6296c1342fc36e2",
+    "spikes/snapshot_read/Makefile": "db7d7bcde7e04dcfd2b2823c8f3343cca4d1652780c43948d245d1bf5fe8c6d1",
+    "spikes/snapshot_read/bootstrap.py": "f3b90494026a5dde18d2b907d7ecb8e1a615fc6d5e3fd6d21fc21adff983e8ac",
+    "spikes/snapshot_read/live.py": "10d9992e65fecebeb6dbe258e59fc39d0b413f64f349b156569c7598719a6fbd",
+    "spikes/snapshot_read/offline.py": "1bcbc9e412dde265255e9ab9016aac9f388d3766cde135395d77308be9d3dde4",
+    "spikes/snapshot_read/run.sh": "fb1de08854042e64cf5c0986c3ab602037691dc843f6bc664e405edd575f3d42",
+    "spikes/snapshot_read/run_live.py": "6e01d0a679512150703327baedc3ef73f5e2ae409a17c2dbe8300819afd24ef1",
+    "spikes/snapshot_read/setup.sql": "44f123b5e5f0dd1db51fa43652d005d9fe63fd9fed04d60662bce31fd44d4bc4",
+    "spikes/snapshot_read/snapshot.c": "8600af817b80058928c1058f355f96e0b7e4e61616cd52ef0f95a09d8a2dbc33"
+  },
+  "checks": [
+    {
+      "name": "vector: create independent collection"
+    },
+    {
+      "name": "bm25: create independent collection"
+    }
+  ],
+  "writes": [],
+  "resources": [
+    {
+      "name": "pgos-live-e4f08ae7c5ec4131b34c-vector",
+      "role": "vector",
+      "tags": [
+        "attempt-0701271e69b5421ba89d238c0b895421",
+        "attempt-4603021e0765481da5ad7c38636cd7ac"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true,
+      "branches": [
+        "attempt-0701271e69b5421ba89d238c0b895421",
+        "attempt-4603021e0765481da5ad7c38636cd7ac"
+      ]
+    },
+    {
+      "name": "pgos-live-e4f08ae7c5ec4131b34c-bm25",
+      "role": "bm25",
+      "tags": [
+        "attempt-009fce3301f248448afb9a603ec181d9",
+        "attempt-2cb5b585a4784891b90ff9f87e20e707"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true,
+      "branches": [
+        "attempt-009fce3301f248448afb9a603ec181d9",
+        "attempt-2cb5b585a4784891b90ff9f87e20e707"
+      ]
+    }
+  ],
+  "snapshot_read": {
+    "status": "passed",
+    "checks": [
+      "Own PK move/delete/insert included locally, isolated from other sessions; savepoint rollback restores base",
+      "Committed vector delta returned against old Tag; changed BM25 corpus rejected explicitly",
+      "Prepared reads refresh Tags; degraded index fails while sibling BM25 and ordinary PG reads remain usable"
+    ],
+    "reads": [
+      {
+        "role": "vector",
+        "phase": "initial",
+        "tag": "attempt-0701271e69b5421ba89d238c0b895421",
+        "batch": "0aa81311-3d8f-421c-8921-66b6d55f1696",
+        "results": [
+          {
+            "id": "1",
+            "doc": {
+              "id": "1",
+              "embedding": [
+                1,
+                0,
+                0
+              ]
+            },
+            "row": {
+              "id": 1,
+              "note": "a",
+              "content": "alpha",
+              "embedding": "[1,0,0]"
+            },
+            "tid": "(0,1)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:2",
+            "distance": 0
+          },
+          {
+            "id": "2",
+            "doc": {
+              "id": "2",
+              "embedding": [
+                0,
+                1,
+                0
+              ]
+            },
+            "row": {
+              "id": 2,
+              "note": "b",
+              "content": "beta",
+              "embedding": "[0,1,0]"
+            },
+            "tid": "(0,2)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:3",
+            "distance": 1
+          }
+        ],
+        "generation": "2bc938bd-cb36-4134-bbd5-a3d45006351a"
+      },
+      {
+        "role": "bm25",
+        "phase": "initial",
+        "tag": "attempt-009fce3301f248448afb9a603ec181d9",
+        "batch": "a05b755c-cc8d-4b31-b8c3-ecd515193125",
+        "results": [
+          {
+            "id": "1",
+            "doc": {
+              "id": "1",
+              "content": "alpha"
+            },
+            "row": {
+              "id": 1,
+              "note": "a",
+              "content": "alpha",
+              "embedding": "[1,0,0]"
+            },
+            "tid": "(0,1)",
+            "score": 0.31506687,
+            "version": "14cc3948-fef2-470b-b7a3-0fb01eaaa4a7:5"
+          }
+        ],
+        "generation": "14cc3948-fef2-470b-b7a3-0fb01eaaa4a7"
+      },
+      {
+        "role": "vector",
+        "phase": "own-writes",
+        "tag": "attempt-0701271e69b5421ba89d238c0b895421",
+        "batch": "0aa81311-3d8f-421c-8921-66b6d55f1696",
+        "results": [
+          {
+            "id": "4",
+            "doc": {
+              "id": "4",
+              "embedding": [
+                0,
+                0,
+                1
+              ]
+            },
+            "row": {
+              "id": 4,
+              "note": "own",
+              "content": "alpha own",
+              "embedding": "[0,0,1]"
+            },
+            "tid": "(0,5)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:14",
+            "distance": 1
+          },
+          {
+            "id": "10",
+            "doc": {
+              "id": "10",
+              "embedding": [
+                -1,
+                0,
+                0
+              ]
+            },
+            "row": {
+              "id": 10,
+              "note": "a",
+              "content": "changed",
+              "embedding": "[-1,0,0]"
+            },
+            "tid": "(0,4)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:10",
+            "distance": 2
+          }
+        ],
+        "generation": "2bc938bd-cb36-4134-bbd5-a3d45006351a"
+      },
+      {
+        "role": "vector",
+        "phase": "own-rollback",
+        "tag": "attempt-0701271e69b5421ba89d238c0b895421",
+        "batch": "0aa81311-3d8f-421c-8921-66b6d55f1696",
+        "results": [
+          {
+            "id": "1",
+            "doc": {
+              "id": "1",
+              "embedding": [
+                1,
+                0,
+                0
+              ]
+            },
+            "row": {
+              "id": 1,
+              "note": "a",
+              "content": "alpha",
+              "embedding": "[1,0,0]"
+            },
+            "tid": "(0,1)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:2",
+            "distance": 0
+          },
+          {
+            "id": "2",
+            "doc": {
+              "id": "2",
+              "embedding": [
+                0,
+                1,
+                0
+              ]
+            },
+            "row": {
+              "id": 2,
+              "note": "b",
+              "content": "beta",
+              "embedding": "[0,1,0]"
+            },
+            "tid": "(0,2)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:3",
+            "distance": 1
+          }
+        ],
+        "generation": "2bc938bd-cb36-4134-bbd5-a3d45006351a"
+      },
+      {
+        "role": "vector",
+        "phase": "committed-lag",
+        "tag": "attempt-0701271e69b5421ba89d238c0b895421",
+        "batch": "0aa81311-3d8f-421c-8921-66b6d55f1696",
+        "results": [
+          {
+            "id": "4",
+            "doc": {
+              "id": "4",
+              "embedding": [
+                0,
+                0,
+                1
+              ]
+            },
+            "row": {
+              "id": 4,
+              "note": "committed",
+              "content": "beta",
+              "embedding": "[0,0,1]"
+            },
+            "tid": "(0,7)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:20",
+            "distance": 1
+          },
+          {
+            "id": "5",
+            "doc": {
+              "id": "5",
+              "embedding": [
+                0,
+                1,
+                0
+              ]
+            },
+            "row": {
+              "id": 5,
+              "note": "committed",
+              "content": "alpha",
+              "embedding": "[0,1,0]"
+            },
+            "tid": "(0,8)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:22",
+            "distance": 1
+          },
+          {
+            "id": "1",
+            "doc": {
+              "id": "1",
+              "embedding": [
+                -1,
+                0,
+                0
+              ]
+            },
+            "row": {
+              "id": 1,
+              "note": "a",
+              "content": "alpha alpha",
+              "embedding": "[-1,0,0]"
+            },
+            "tid": "(0,6)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:16",
+            "distance": 2
+          }
+        ],
+        "generation": "2bc938bd-cb36-4134-bbd5-a3d45006351a"
+      },
+      {
+        "role": "vector",
+        "phase": "republished",
+        "tag": "attempt-4603021e0765481da5ad7c38636cd7ac",
+        "batch": "b810c4a5-9a44-45c3-8501-e9028cebc320",
+        "results": [
+          {
+            "id": "4",
+            "doc": {
+              "id": "4",
+              "embedding": [
+                0,
+                0,
+                1
+              ]
+            },
+            "row": {
+              "id": 4,
+              "note": "committed",
+              "content": "beta",
+              "embedding": "[0,0,1]"
+            },
+            "tid": "(0,7)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:20",
+            "distance": 1
+          },
+          {
+            "id": "5",
+            "doc": {
+              "id": "5",
+              "embedding": [
+                0,
+                1,
+                0
+              ]
+            },
+            "row": {
+              "id": 5,
+              "note": "committed",
+              "content": "alpha",
+              "embedding": "[0,1,0]"
+            },
+            "tid": "(0,8)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:22",
+            "distance": 1
+          },
+          {
+            "id": "1",
+            "doc": {
+              "id": "1",
+              "embedding": [
+                -1,
+                0,
+                0
+              ]
+            },
+            "row": {
+              "id": 1,
+              "note": "a",
+              "content": "alpha alpha",
+              "embedding": "[-1,0,0]"
+            },
+            "tid": "(0,6)",
+            "version": "2bc938bd-cb36-4134-bbd5-a3d45006351a:16",
+            "distance": 2
+          }
+        ],
+        "generation": "2bc938bd-cb36-4134-bbd5-a3d45006351a"
+      },
+      {
+        "role": "bm25",
+        "phase": "republished",
+        "tag": "attempt-2cb5b585a4784891b90ff9f87e20e707",
+        "batch": "dfa181e7-61f4-4037-b79f-dd6a31b0b8bc",
+        "results": [
+          {
+            "id": "1",
+            "doc": {
+              "id": "1",
+              "content": "alpha alpha"
+            },
+            "row": {
+              "id": 1,
+              "note": "a",
+              "content": "alpha alpha",
+              "embedding": "[-1,0,0]"
+            },
+            "tid": "(0,6)",
+            "score": 0.25753623,
+            "version": "14cc3948-fef2-470b-b7a3-0fb01eaaa4a7:15"
+          },
+          {
+            "id": "5",
+            "doc": {
+              "id": "5",
+              "content": "alpha"
+            },
+            "row": {
+              "id": 5,
+              "note": "committed",
+              "content": "alpha",
+              "embedding": "[0,1,0]"
+            },
+            "tid": "(0,8)",
+            "score": 0.23797652,
+            "version": "14cc3948-fef2-470b-b7a3-0fb01eaaa4a7:21"
+          }
+        ],
+        "generation": "14cc3948-fef2-470b-b7a3-0fb01eaaa4a7"
+      },
+      {
+        "role": "bm25",
+        "phase": "healthy-sibling",
+        "tag": "attempt-2cb5b585a4784891b90ff9f87e20e707",
+        "batch": "dfa181e7-61f4-4037-b79f-dd6a31b0b8bc",
+        "results": [
+          {
+            "id": "1",
+            "doc": {
+              "id": "1",
+              "content": "alpha alpha"
+            },
+            "row": {
+              "id": 1,
+              "note": "a",
+              "content": "alpha alpha",
+              "embedding": "[-1,0,0]"
+            },
+            "tid": "(0,6)",
+            "score": 0.25753623,
+            "version": "14cc3948-fef2-470b-b7a3-0fb01eaaa4a7:15"
+          },
+          {
+            "id": "5",
+            "doc": {
+              "id": "5",
+              "content": "alpha"
+            },
+            "row": {
+              "id": 5,
+              "note": "committed",
+              "content": "alpha",
+              "embedding": "[0,1,0]"
+            },
+            "tid": "(0,8)",
+            "score": 0.23797652,
+            "version": "14cc3948-fef2-470b-b7a3-0fb01eaaa4a7:21"
+          }
+        ],
+        "generation": "14cc3948-fef2-470b-b7a3-0fb01eaaa4a7"
+      }
+    ],
+    "writes": [
+      {
+        "attempt": "0701271e-69b5-421b-a89d-238c0b895421",
+        "operation": "upsert",
+        "size": 2
+      },
+      {
+        "attempt": "009fce33-01f2-4844-8afb-9a603ec181d9",
+        "operation": "upsert",
+        "size": 2
+      },
+      {
+        "attempt": "4603021e-0765-481d-a5ad-7c38636cd7ac",
+        "operation": "delete",
+        "size": 1
+      },
+      {
+        "attempt": "4603021e-0765-481d-a5ad-7c38636cd7ac",
+        "operation": "upsert",
+        "size": 3
+      },
+      {
+        "attempt": "2cb5b585-a478-4891-b90f-f9f87e20e707",
+        "operation": "delete",
+        "size": 1
+      },
+      {
+        "attempt": "2cb5b585-a478-4891-b90f-f9f87e20e707",
+        "operation": "upsert",
+        "size": 3
+      }
+    ],
+    "barriers": [
+      {
+        "attempt": "0701271e-69b5-421b-a89d-238c0b895421",
+        "parent_snapshot": null,
+        "snapshot_id": "87d60ca8-aa3f-4b6f-84a6-1e98291441c5",
+        "polls": 40,
+        "elapsed_seconds": 82.092
+      },
+      {
+        "attempt": "009fce33-01f2-4844-8afb-9a603ec181d9",
+        "parent_snapshot": null,
+        "snapshot_id": "4d482406-a085-4890-b1e9-aa1848c1f8ba",
+        "polls": 35,
+        "elapsed_seconds": 71.498
+      },
+      {
+        "attempt": "4603021e-0765-481d-a5ad-7c38636cd7ac",
+        "parent_snapshot": {
+          "snapshotId": "87d60ca8-aa3f-4b6f-84a6-1e98291441c5",
+          "snapshotCommittedAt": 1790511997792
+        },
+        "snapshot_id": "cc5e264b-c5f2-4762-ba19-4c45f55f8199",
+        "polls": 29,
+        "elapsed_seconds": 58.469
+      },
+      {
+        "attempt": "2cb5b585-a478-4891-b90f-f9f87e20e707",
+        "parent_snapshot": {
+          "snapshotId": "4d482406-a085-4890-b1e9-aa1848c1f8ba",
+          "snapshotCommittedAt": 1790512069303
+        },
+        "snapshot_id": "62c3ac16-f795-4293-9431-937a44ba1da8",
+        "polls": 25,
+        "elapsed_seconds": 50.705
+      }
+    ]
+  },
+  "finished_at": "2026-09-27T12:29:44.329817+00:00"
+}

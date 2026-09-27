@@ -147,7 +147,8 @@ throughput result. All four Tags and four non-main Branches were deleted, and
 both collection GETs returned 404 during cleanup. Retry and crash cases were
 injected locally; this live run exercised successful initial and delta replay.
 
-The next integration gate is a PG snapshot-bound publication/delta reader with
-stable row-version identity and own writes. The real executor and commit-response
+The follow-on [snapshot reader experiment](snapshot-read-spike.md) now tests
+statement-bound Tag/delta/heap reads, captured revision identity, vector own writes,
+and same-corpus BM25 reads; changed-corpus BM25 is explicitly rejected. The real executor and commit-response
 probes can then consume that state without treating an ACK or a published Tag
 alone as proof of a healthy, snapshot-correct search.
