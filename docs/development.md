@@ -54,6 +54,14 @@ evidence separate. Commit-wait/protocol safety, security, scale and release gate
 remain open. Revisit a generic temporary search workspace only after use cases
 beyond pg_onesearch and the cost of existing Branch/Tag workflows justify it.
 
+The first stabilization increment connects the SQL reader and Custom Scan to
+durable replay readiness: a committed pending batch blocks affected-index reads
+until verified publication commits, even after worker termination or PG restart.
+The [executor recovery tests](snapshot-executor-spike.md#replay-failure-and-recovery-coverage)
+cover this bounded behavior with local fixtures. General remote health detection,
+automatic retry scheduling, commit-wait, resource cleanup and product integration
+remain open; no LambdaDB core change or changed-corpus BM25 path is introduced.
+
 ## Confirmed requirements from the handoff
 
 - Extension/repository identifier: `pg_onesearch`; no required pgvector extension.

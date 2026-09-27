@@ -54,12 +54,20 @@ check_health(Oid index)
     Datum ok = select_one(
         "SELECT EXISTS (SELECT FROM pgos_capture_probe.generations g "
         "JOIN pgos_snapshot_probe.health h USING(generation) "
-        "WHERE g.index_oid=$1 AND g.state='capturing' AND h.healthy)",
+        "JOIN pgos_replay_probe.targets t USING(generation) "
+        "JOIN pgos_replay_probe.batches b ON b.id=t.current_batch AND b.generation=g.generation "
+        "WHERE g.index_oid=$1 AND g.state='capturing' AND h.healthy "
+        "AND b.state='published' AND NOT EXISTS ("
+        "SELECT FROM pgos_replay_probe.batches pending "
+        "WHERE pending.generation=g.generation AND pending.state='pending'))",
         1, types, args, GetLatestSnapshot(), &isnull);
 
+    /* A committed claim fences reads before remote I/O, even if its worker dies.
+     * Publication clears pending state and advances the head in one transaction.
+     * The test flag can veto readiness, but cannot bypass this durable gate. */
     if (isnull || !DatumGetBool(ok))
         ereport(ERROR, (errcode(ERRCODE_OBJECT_NOT_IN_PREREQUISITE_STATE),
-                        errmsg("snapshot probe index is unavailable or degraded")));
+                        errmsg("snapshot probe index is unavailable, degraded, or awaiting replay publication")));
 }
 
 static void

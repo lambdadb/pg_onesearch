@@ -1,7 +1,11 @@
 """Actual Custom Scan over mutable heap, capture/replay and local immutable TLS Tags."""
 import importlib.util
+import os
 from pathlib import Path
+import select
 import ssl
+import subprocess
+import sys
 import threading
 import unittest
 
@@ -11,6 +15,7 @@ path = Path(__file__).resolve().parents[1] / 'snapshot_read' / 'offline.py'
 spec = importlib.util.spec_from_file_location('snapshot_fixture', path)
 fixture = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(fixture)
+from worker import name, ProbeError
 
 SCORE = "pgos_snapshot_executor.score('fixture.txt',id)"
 BM25 = f"SELECT id,note,{SCORE} AS score FROM fixture.docs WHERE pgos_snapshot_executor.match('fixture.txt',content,%s) ORDER BY score DESC,id"
@@ -37,6 +42,190 @@ class ExecutorTests(unittest.TestCase):
     def expected(self, conn=None, query='[1,0,0]'):
         return (conn or self.conn).execute('''SELECT id,note,onesearch.cosine_distance(embedding,%s::onesearch.vector)
         FROM fixture.docs WHERE embedding IS NOT NULL ORDER BY 3,1''',(query,)).fetchall()
+
+    def pending_events(self, mode='vec'):
+        return self.conn.execute('''SELECT event_id,writer_xid,operation,row_key,document
+            FROM pgos_capture_probe.outbox WHERE generation=%s ORDER BY event_id''',
+            (self.gen[mode],)).fetchall()
+
+    def assert_replay_blocked(self, mode='vec'):
+        before = len(fixture.CALLS)
+        with self.assertRaises(psycopg.errors.ObjectNotInPrerequisiteState):
+            if mode == 'vec':
+                self.vector(prepare=True)
+            else:
+                self.conn.execute(BM25, ('alpha',), prepare=True)
+        # The SQL reader and Custom Scan must enforce the same operational gate.
+        with self.assertRaises(psycopg.errors.ObjectNotInPrerequisiteState):
+            self.view(mode)
+        self.assertEqual(len(fixture.CALLS), before)
+
+    def stop_after_verified_tag(self, mode='vec'):
+        def stop(phase):
+            if phase == 'tag_verified':
+                raise RuntimeError('Stopped before PG publication')
+        with self.assertRaisesRegex(RuntimeError, 'Stopped before PG publication'):
+            fixture.replay(self.conn, self.gen[mode], self.remote[mode], checkpoint=stop)
+        barrier = self.remote[mode].barriers[-1]
+        snapshot = self.remote[mode].client.snapshots[name(barrier['attempt'])]
+        return barrier['attempt'], snapshot['snapshotId'], snapshot['snapshotCommittedAt']
+
+    def test_replay_failure_blocks_both_modes_until_fresh_attempt_publishes(self):
+        self.conn.execute('SET plan_cache_mode=force_generic_plan')
+        for mode in ('vec', 'txt'):
+            for failure in ('/docs/upsert', '/tags', 'wrong_marker'):
+                with self.subTest(mode=mode, failure=failure):
+                    # Same indexed corpus: BM25 must fail on replay health, not 0A000.
+                    self.conn.execute("UPDATE fixture.docs SET note=coalesce(note,'')||'x' WHERE id=1")
+                    if mode == 'vec':
+                        self.vector(prepare=True)
+                    else:
+                        self.conn.execute(BM25, ('alpha',), prepare=True)
+                    events = self.pending_events(mode)
+                    source_rows = self.conn.execute('SELECT * FROM fixture.docs ORDER BY id').fetchall()
+                    store = self.remote[mode].client
+                    if failure == 'wrong_marker':
+                        store.wrong_marker = True
+                    else:
+                        store.fail_after = failure
+                    with self.assertRaises(ProbeError):
+                        self.publish(mode)
+                    old_attempt = self.conn.execute('''SELECT active_attempt FROM pgos_replay_probe.batches
+                        WHERE generation=%s AND state='pending' ''', (self.gen[mode],)).fetchone()[0]
+                    self.assertEqual(self.pending_events(mode), events)
+                    self.assertEqual(self.conn.execute('SELECT * FROM fixture.docs ORDER BY id').fetchall(), source_rows)
+                    self.conn.execute('SELECT pgos_snapshot_probe.set_test_health(%s::regclass,true)', ('fixture.'+mode,))
+                    self.assert_replay_blocked(mode)
+                    # A failed index must not disable a healthy sibling or ordinary PG reads.
+                    if mode == 'vec':
+                        self.assertEqual(self.conn.execute(BM25, ('alpha',)).fetchone()[0], 1)
+                    else:
+                        self.assertEqual(self.vector(), self.expected())
+                    store.wrong_marker = False
+                    result = self.publish(mode)
+                    self.assertNotEqual(result['attempt'], str(old_attempt))
+                    self.assertEqual(self.pending_events(mode), [])
+                    if mode == 'vec':
+                        self.assertEqual(self.vector(prepare=True), self.expected())
+                    else:
+                        self.assertEqual(self.conn.execute(BM25, ('alpha',), prepare=True).fetchone()[0], 1)
+
+    def test_abandoned_claim_and_attempt_remain_blocked_without_worker_callback(self):
+        program = '''
+import signal, sys
+import psycopg
+sys.path.insert(0, 'spikes/batch_replay')
+from worker import replay
+def pause(phase):
+    if phase == sys.argv[2]:
+        print('ready', flush=True)
+        signal.pause()
+with psycopg.connect(autocommit=True) as conn:
+    replay(conn, sys.argv[1], None, checkpoint=pause)
+'''
+        for phase in ('claimed', 'attempt_committed'):
+            with self.subTest(phase=phase):
+                self.conn.execute("UPDATE fixture.docs SET note=note||'x' WHERE id=1")
+                worker = subprocess.Popen([sys.executable, '-c', program, str(self.gen['vec']), phase],
+                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                try:
+                    self.assertTrue(select.select([worker.stdout], [], [], 5)[0], 'Worker did not reach checkpoint')
+                    self.assertEqual(worker.stdout.readline().strip(), 'ready')
+                    worker.kill()  # SIGKILL: no worker exception/finally hook can set health.
+                    worker.wait(timeout=5)
+                finally:
+                    if worker.poll() is None:
+                        worker.kill()
+                    worker.communicate(timeout=5)
+                self.assert_replay_blocked()
+                self.publish()
+                self.assertEqual(self.vector(), self.expected())
+
+    def test_publication_does_not_hide_newer_bm25_lag_or_clear_explicit_veto(self):
+        self.conn.execute("UPDATE fixture.docs SET content='alpha first' WHERE id=1")
+        receipt = self.stop_after_verified_tag('txt')
+        self.conn.execute("UPDATE fixture.docs SET content='alpha second' WHERE id=1")
+        self.conn.execute('SELECT pgos_replay_probe.publish(%s,%s,%s)', receipt)
+        self.assertTrue(self.pending_events('txt'))
+        before = len(fixture.CALLS)
+        with self.assertRaises(psycopg.errors.FeatureNotSupported):
+            self.conn.execute(BM25, ('alpha',))
+        self.assertEqual(len(fixture.CALLS), before)
+        self.conn.execute("SELECT pgos_snapshot_probe.set_test_health('fixture.txt',false)")
+        self.publish('txt')
+        self.assertEqual(self.pending_events('txt'), [])
+        self.assert_replay_blocked('txt')
+        self.conn.execute("SELECT pgos_snapshot_probe.set_test_health('fixture.txt',true)")
+        self.assertEqual(self.conn.execute(BM25, ('alpha',)).fetchall(), [(1, 'a', 1.0)])
+
+    def test_verified_tag_uncommitted_publication_and_stale_receipts_do_not_unblock(self):
+        self.conn.execute("UPDATE fixture.docs SET embedding='[-1,0,0]' WHERE id=1")
+        events = self.pending_events()
+        receipt = self.stop_after_verified_tag()
+        self.assert_replay_blocked()
+        with psycopg.connect() as publishing:
+            publishing.execute('SELECT pgos_replay_probe.publish(%s,%s,%s)', receipt)
+            self.assert_replay_blocked()
+            publishing.rollback()
+        self.assertEqual(self.pending_events(), events)
+        self.assert_replay_blocked()
+        result = self.publish()
+        self.assertNotEqual(result['attempt'], receipt[0])
+        with self.assertRaises(psycopg.errors.ObjectNotInPrerequisiteState):
+            self.conn.execute('SELECT pgos_replay_probe.publish(%s,%s,%s)', receipt)
+        self.assertEqual(self.vector(), self.expected())
+        # An idempotent receipt for an older published batch cannot clear a NEW pending batch.
+        committed = self.remote['vec'].client.snapshots[result['tag']]
+        self.conn.execute("UPDATE fixture.docs SET note=note||'x' WHERE id=1")
+        self.conn.execute('SELECT pgos_replay_probe.claim(%s)', (self.gen['vec'],))
+        self.conn.execute('SELECT pgos_replay_probe.publish(%s,%s,%s)',
+                          (result['attempt'], committed['snapshotId'], committed['snapshotCommittedAt']))
+        self.assert_replay_blocked()
+        self.publish()
+        self.assertEqual(self.vector(), self.expected())
+
+    def test_pending_replay_survives_pg_crash_with_uncommitted_publication(self):
+        self.conn.execute("UPDATE fixture.docs SET embedding='[-1,0,0]' WHERE id=1")
+        receipt = self.stop_after_verified_tag()
+        events = self.pending_events()
+        publishing = psycopg.connect()
+        self.addCleanup(publishing.close)
+        publishing.execute('SELECT pgos_replay_probe.publish(%s,%s,%s)', receipt)
+        self.assert_replay_blocked()
+        self.conn.close()
+        subprocess.run(['gosu','postgres','pg_ctl','-m','immediate','-w','stop'], check=True, capture_output=True)
+        subprocess.run(['gosu','postgres','pg_ctl','-l',os.environ['PGDATA']+'/server.log','-w','start'],
+                       check=True, capture_output=True)
+        self.conn = psycopg.connect(autocommit=True)
+        self.addCleanup(self.conn.close)
+        self.assertEqual(self.pending_events(), events)
+        self.assert_replay_blocked()
+        self.publish()
+        self.assertEqual(self.vector(), self.expected())
+
+    def test_lost_publication_response_is_already_healthy(self):
+        self.conn.execute("UPDATE fixture.docs SET note=note||'x' WHERE id=1")
+        def stop(phase):
+            if phase == 'published':
+                raise RuntimeError('Publication response lost')
+        with self.assertRaisesRegex(RuntimeError, 'Publication response lost'):
+            fixture.replay(self.conn, self.gen['vec'], self.remote['vec'], checkpoint=stop)
+        self.assertEqual(self.pending_events(), [])
+        self.assertEqual(self.vector(), self.expected())
+        self.assertIsNone(self.publish())
+
+    def test_claim_during_http_blocks_old_statement_until_recovered(self):
+        self.conn.execute("UPDATE fixture.docs SET note=note||'x' WHERE id=1")
+        def claim():
+            with psycopg.connect(autocommit=True) as worker:
+                worker.execute('SELECT pgos_replay_probe.claim(%s)', (self.gen['vec'],))
+        fixture.FAULT = claim
+        with self.assertRaises(psycopg.errors.ObjectNotInPrerequisiteState):
+            self.vector()
+        fixture.FAULT = None
+        self.assert_replay_blocked()
+        self.publish()
+        self.assertEqual(self.vector(), self.expected())
 
     def test_plan_typed_rows_filters_limit_and_no_io_explain(self):
         before=len(fixture.CALLS)

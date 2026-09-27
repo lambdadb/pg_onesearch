@@ -56,15 +56,30 @@ its now-deleted delta and its old heap version; the next statement selects the n
 Tag and remaining delta. This tests READ COMMITTED statement lifetime, not support
 for REPEATABLE READ, exported snapshots, persistent cursors or remote continuation.
 
-Operational health uses a separate logged table and `GetLatestSnapshot()` for
-checks before capture and before returning materialized results. A missing or
-false flag rejects the index with `55000`, including prepared calls and an old
-statement snapshot. A failure committed during HTTP also rejects the response.
-The guarantee ends at the last check; this is not asynchronous revocation of
-already-returned rows. `set_test_health` is explicitly a fault-injection control.
-Automatic failure detection, restart reconstruction, generation-fenced recovery,
-and write/recovery races are **not** implemented. A manual healthy flag is not
-production evidence of recovery.
+Operational health uses `GetLatestSnapshot()` before capture and before returning
+materialized results. The generation must be capturing, its target must reference
+a published batch belonging to that generation, and no pending replay batch may
+exist for it. A missing or false flag in the separate logged test-health table
+also vetoes reads. A failed guard rejects with `55000`, including prepared calls
+and an old statement snapshot. A claim committed during HTTP rejects the response.
+
+This is a conservative replay gate: the committed claim blocks the affected index
+throughout replay, including a healthy in-flight attempt. It does not wait for a
+worker to catch an exception or mark a failure. Lost remote responses, worker
+termination and PG restart leave the logged pending batch in place. Only committed
+publication changes that batch to published and advances the target atomically;
+a verified remote Tag alone cannot restore readiness. Retrying uses the existing
+fresh-attempt protocol. `set_test_health(true)` cannot bypass a pending batch,
+and publication cannot clear an explicit test-health veto.
+
+Unclaimed outbox lag is still handled by the existing snapshot paths: bounded
+vector overlays may proceed, while effective indexed BM25 changes reject before
+HTTP with `0A000`. Newer events outside a recovered batch remain subject to those
+checks. This gate does not detect arbitrary remote outages, missing remote Tags,
+or failures before a claim commits, and does not schedule recovery or implement
+commit-response warnings. The guarantee ends at the last check; it does not
+asynchronously revoke rows already returned. The fault-injection flag remains a
+test control, not a production health administrator API.
 
 The choice follows [PG function snapshot rules](https://www.postgresql.org/docs/18/xfunc-volatility.html)
 and the explicit-snapshot/read-only branches in [PG18.6 SPI source](https://github.com/postgres/postgres/blob/REL_18_6/src/backend/executor/spi.c).
