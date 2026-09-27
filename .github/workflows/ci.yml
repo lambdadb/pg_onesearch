@@ -51,6 +51,10 @@ jobs:
         run: |
           set -o pipefail
           ./scripts/test-index-lifecycle.sh --reuse-client-image 2>&1 | tee /tmp/pg_onesearch-index-lifecycle.log
+      - name: Atomic source and outbox capture experiment
+        run: |
+          set -o pipefail
+          ./scripts/test-change-capture.sh --reuse-lifecycle-image 2>&1 | tee /tmp/pg_onesearch-change-capture.log
       - name: Record build inputs
         run: |
           git rev-parse HEAD > artifacts/source-revision.txt
@@ -59,6 +63,7 @@ jobs:
           cp /tmp/pg_onesearch-remote-read.log artifacts/remote-read.log
           cp /tmp/pg_onesearch-executor.log artifacts/executor.log
           cp /tmp/pg_onesearch-index-lifecycle.log artifacts/index-lifecycle.log
+          cp /tmp/pg_onesearch-change-capture.log artifacts/change-capture.log
           docker image inspect pg_onesearch:0.1.0-dev --format '{{.Id}}' > artifacts/image-id.txt
           docker run --rm --network none --entrypoint sh pg_onesearch:0.1.0-dev \
             -c 'pg_config --version; gcc --version; dpkg-query -W' > artifacts/build-environment.txt
