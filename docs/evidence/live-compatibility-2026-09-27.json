@@ -1,0 +1,365 @@
+{
+  "run_id": "6c4a3ce814c44fbeb92eee0367f69015",
+  "started_at": "2026-09-27T08:34:09.082081+00:00",
+  "status": "passed",
+  "source_revision": "22c8281482b1e7474df53a848fac3c81c306eb44",
+  "worktree_dirty": true,
+  "harness_sha256": "4e0b7b61e9c8944ad47d9a8484afc90409f421ae8ba7ed5df588ee45f16fa5d5",
+  "python": "3.14.5",
+  "assumptions": [
+    "Owner-confirmed per-request document atomicity",
+    "Owner-confirmed application order follows serial write acknowledgements",
+    "Single writer in fresh unpartitioned temporary collections"
+  ],
+  "checks": [
+    {
+      "name": "vector: create independent collection"
+    },
+    {
+      "name": "vector: indexed marker then verified Tag (initial)",
+      "attempts": 50,
+      "elapsed_seconds": 102.549,
+      "snapshot_id": "4f612027-b83f-4453-8c62-770a77464cee",
+      "marker_revision": "6c4a3ce814c44fbeb92eee0367f69015-initial"
+    },
+    {
+      "name": "vector: bounded cosine membership/order (initial)",
+      "scores": {
+        "d1": 1.0,
+        "d5": 1.0,
+        "d2": 0.9,
+        "d3": 0.5,
+        "d4": 0.0
+      },
+      "local_distances": {
+        "d1": 0.0,
+        "d2": 0.19999999999999996,
+        "d3": 1.0,
+        "d4": 2.0,
+        "d5": 0.0
+      },
+      "max_error_vs_one_minus_half_distance": 0.0
+    },
+    {
+      "name": "vector: mismatched query dimensions rejected",
+      "http_status": 400
+    },
+    {
+      "name": "vector: zero query rejected",
+      "http_status": 400
+    },
+    {
+      "name": "vector: consistentRead on Tag rejected",
+      "http_status": 400
+    },
+    {
+      "name": "vector: indexed marker then verified Tag (mutated)",
+      "attempts": 24,
+      "elapsed_seconds": 48.13,
+      "snapshot_id": "5546bd3d-f703-4819-ad15-eff937498151",
+      "marker_revision": "6c4a3ce814c44fbeb92eee0367f69015-mutated"
+    },
+    {
+      "name": "vector: bounded cosine membership/order (mutated)",
+      "scores": {
+        "d5": 1.0,
+        "d2": 1.0,
+        "d6": 0.8,
+        "d1": 0.5,
+        "d7": 0.100000024
+      },
+      "local_distances": {
+        "d1": 1.0,
+        "d2": 0.0,
+        "d5": 0.0,
+        "d6": 0.4,
+        "d7": 1.8
+      },
+      "max_error_vs_one_minus_half_distance": 2.4000000029000823e-08
+    },
+    {
+      "name": "vector: bounded cosine membership/order (pinned-again)",
+      "scores": {
+        "d1": 1.0,
+        "d5": 1.0,
+        "d2": 0.9,
+        "d3": 0.5,
+        "d4": 0.0
+      },
+      "local_distances": {
+        "d1": 0.0,
+        "d2": 0.19999999999999996,
+        "d3": 1.0,
+        "d4": 2.0,
+        "d5": 0.0
+      },
+      "max_error_vs_one_minus_half_distance": 0.0
+    },
+    {
+      "name": "vector: batch update/upsert/delete and immutable old Tag"
+    },
+    {
+      "name": "bm25: create independent collection"
+    },
+    {
+      "name": "bm25: indexed marker then verified Tag (initial)",
+      "attempts": 34,
+      "elapsed_seconds": 70.101,
+      "snapshot_id": "c89f3547-af6b-410c-bd2b-6d348d5a8a2b",
+      "marker_revision": "6c4a3ce814c44fbeb92eee0367f69015-initial"
+    },
+    {
+      "name": "bm25: alpha membership and score observation (initial)",
+      "scores": {
+        "d1": 0.33023855,
+        "d5": 0.33023855,
+        "d2": 0.20845169
+      },
+      "live_corpus_reference": {
+        "d1": 0.33023855624759824,
+        "d2": 0.20845168536623263,
+        "d5": 0.33023855624759824
+      },
+      "max_error_vs_reference": 6.247598216546635e-09,
+      "reference_matches": true
+    },
+    {
+      "name": "bm25: OR, case folding, and no-token query"
+    },
+    {
+      "name": "bm25: repeated-term score observation",
+      "scores": {
+        "d1": 0.6604771,
+        "d5": 0.6604771,
+        "d2": 0.41690338
+      }
+    },
+    {
+      "name": "bm25: consistentRead on Tag rejected",
+      "http_status": 400
+    },
+    {
+      "name": "bm25: indexed marker then verified Tag (mutated)",
+      "attempts": 26,
+      "elapsed_seconds": 51.758,
+      "snapshot_id": "0e65b583-4a60-4291-8db5-adf55e45db7d",
+      "marker_revision": "6c4a3ce814c44fbeb92eee0367f69015-mutated"
+    },
+    {
+      "name": "bm25: alpha membership and score observation (mutated)",
+      "scores": {
+        "d2": 0.36542135,
+        "d5": 0.31474248,
+        "d6": 0.26292512
+      },
+      "live_corpus_reference": {
+        "d2": 0.3654213564289404,
+        "d5": 0.3147424821796713,
+        "d6": 0.2629251223086279
+      },
+      "max_error_vs_reference": 6.428940435565522e-09,
+      "reference_matches": true
+    },
+    {
+      "name": "bm25: alpha membership and score observation (pinned-again)",
+      "scores": {
+        "d1": 0.33023855,
+        "d5": 0.33023855,
+        "d2": 0.20845169
+      },
+      "live_corpus_reference": {
+        "d1": 0.33023855624759824,
+        "d2": 0.20845168536623263,
+        "d5": 0.33023855624759824
+      },
+      "max_error_vs_reference": 6.247598216546635e-09,
+      "reference_matches": true
+    },
+    {
+      "name": "bm25: batch update/upsert/delete and immutable old Tag"
+    },
+    {
+      "name": "bm25: indexed marker then verified Tag (large)",
+      "attempts": 32,
+      "elapsed_seconds": 64.146,
+      "snapshot_id": "34af4852-980e-4c70-a7ca-d28f0ce68ad6",
+      "marker_revision": "6c4a3ce814c44fbeb92eee0367f69015-large"
+    },
+    {
+      "name": "bm25: offloaded query array downloaded without API key",
+      "count": 100,
+      "returned_total": 100,
+      "known_matching_corpus": 110
+    },
+    {
+      "name": "query: size above 100 rejected",
+      "http_status": 400
+    },
+    {
+      "name": "Tag list pagination enumerates fixture but is not ranked continuation",
+      "pages": 4,
+      "documents": 116
+    },
+    {
+      "name": "coverage gap: post-filtering one top-100 page can miss eligible rows",
+      "eligible_outside_page": 10,
+      "returned_after_rejecting_page": 0,
+      "ranked_cursor_present": false
+    },
+    {
+      "name": "old Tag remains unchanged after large corpus growth"
+    }
+  ],
+  "writes": [
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-vector",
+      "operation": "upsert",
+      "batch_sizes": [
+        5
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-vector",
+      "operation": "upsert",
+      "batch_sizes": [
+        1
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-vector",
+      "operation": "update",
+      "batch_sizes": [
+        2
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-vector",
+      "operation": "upsert",
+      "batch_sizes": [
+        2
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-vector",
+      "operation": "delete",
+      "batch_sizes": [
+        2
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-vector",
+      "operation": "upsert",
+      "batch_sizes": [
+        1
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-bm25",
+      "operation": "upsert",
+      "batch_sizes": [
+        5
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-bm25",
+      "operation": "upsert",
+      "batch_sizes": [
+        1
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-bm25",
+      "operation": "update",
+      "batch_sizes": [
+        2
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-bm25",
+      "operation": "upsert",
+      "batch_sizes": [
+        2
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-bm25",
+      "operation": "delete",
+      "batch_sizes": [
+        2
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-bm25",
+      "operation": "upsert",
+      "batch_sizes": [
+        1
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-bm25",
+      "operation": "upsert",
+      "batch_sizes": [
+        52,
+        52,
+        6
+      ],
+      "ack_status": 202
+    },
+    {
+      "collection": "pgos-live-6c4a3ce814c44fbeb92e-bm25",
+      "operation": "upsert",
+      "batch_sizes": [
+        1
+      ],
+      "ack_status": 202
+    }
+  ],
+  "resources": [
+    {
+      "name": "pgos-live-6c4a3ce814c44fbeb92e-vector",
+      "role": "vector",
+      "tags": [
+        "checkpoint-initial",
+        "checkpoint-mutated"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true
+    },
+    {
+      "name": "pgos-live-6c4a3ce814c44fbeb92e-bm25",
+      "role": "bm25",
+      "tags": [
+        "checkpoint-initial",
+        "checkpoint-mutated",
+        "checkpoint-large"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true
+    }
+  ],
+  "fixture_sha256": "5c911d1b2072d0f431d855ea11b60dc664d8bb5915f2a30d0dcaf30dced86ddf",
+  "finished_at": "2026-09-27T08:39:51.779911+00:00",
+  "http_calls": 235,
+  "result_downloads": 1,
+  "compressed_responses": 1,
+  "gzip_without_header": 0,
+  "public_export": {
+    "omitted_fields": [
+      "target_fingerprint"
+    ],
+    "raw_report_sha256": "a665a42e5e28e69302791a3e250cd4c2856b7a76429b832b38147462e162e75f",
+    "tested_harness_matches_source_revision": true
+  }
+}

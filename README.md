@@ -91,6 +91,7 @@ record does not replace or edit that canonical plan.
 - [Commit/worker feasibility experiment and protocol limitations](docs/commit-worker-spike.md)
 - [Proposed vector/BM25 SQL and client contract, with unresolved gates](docs/sql-client-contract.md)
 - [Actual psql/Psycopg completion and warning evidence](docs/client-contract-validation.md)
+- [Live LambdaDB compatibility harness and indexed-write barrier](docs/live-compatibility.md)
 
 Run `./scripts/test-commit-worker.sh` for the isolated commit/worker experiment.
 It compiles a separate test-only module in a disposable container. That module

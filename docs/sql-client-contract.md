@@ -177,7 +177,10 @@ resolve these before enabling broader security/query shapes.
 
 The public [Query API schema](https://docs.lambdadb.ai/reference/api/openapi.json) was inspected
 on 2026-09-26; no authenticated remote requests or remote resources were created.
-This is published-schema evidence, not a deployed-service compatibility result.
+This is published-schema evidence. The subsequent [live compatibility experiment](live-compatibility.md)
+adds bounded deployed-service observations and records the owner-confirmed
+per-request atomicity / serial acknowledgement order used by its indexed-marker
+barrier. It does not turn that workaround into a production commit token.
 
 - Query `size` is 1–100. No ranked continuation token is declared. `total` is
   documented as the number returned, not an eligible-corpus count or exhaustion
@@ -209,9 +212,10 @@ This is published-schema evidence, not a deployed-service compatibility result.
 
 Next executable gates, before claiming the first E2E complete:
 
-1. Run a bounded deployed-service compatibility fixture for both search paths,
-   including inline/offloaded results, immutable Tags, candidate coverage, and
-   BM25 score/statistics behavior. Resolve API gaps instead of hiding them in SQL.
+1. The [bounded live compatibility fixture](live-compatibility.md) now covers
+   both search paths, inline/offloaded results, Tags, candidate coverage, and
+   small-corpus BM25 scores. Resolve the remaining ranked-continuation and strict
+   overlay/statistics gaps instead of treating the fixture as a full E2E.
 2. Prove actual plans and execution-local match/score binding, health checks on
    reused plans/rescans, and local reference comparisons for both modalities.
 3. Implement/audit durable identity, fenced replay, remote readiness/publication,
