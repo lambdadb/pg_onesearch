@@ -65,6 +65,10 @@ jobs:
         run: |
           set -o pipefail
           ./scripts/test-snapshot-read.sh --reuse-transport-image 2>&1 | tee /tmp/pg_onesearch-snapshot-read.log
+      - name: Snapshot-aware Custom Scan experiment
+        run: |
+          set -o pipefail
+          ./scripts/test-snapshot-executor.sh --reuse-snapshot-image 2>&1 | tee /tmp/pg_onesearch-snapshot-executor.log
       - name: Record build inputs
         run: |
           git rev-parse HEAD > artifacts/source-revision.txt
@@ -76,6 +80,7 @@ jobs:
           cp /tmp/pg_onesearch-change-capture.log artifacts/change-capture.log
           cp /tmp/pg_onesearch-batch-replay.log artifacts/batch-replay.log
           cp /tmp/pg_onesearch-snapshot-read.log artifacts/snapshot-read.log
+          cp /tmp/pg_onesearch-snapshot-executor.log artifacts/snapshot-executor.log
           docker image inspect pg_onesearch:0.1.0-dev --format '{{.Id}}' > artifacts/image-id.txt
           docker run --rm --network none --entrypoint sh pg_onesearch:0.1.0-dev \
             -c 'pg_config --version; gcc --version; dpkg-query -W' > artifacts/build-environment.txt

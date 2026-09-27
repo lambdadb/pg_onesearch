@@ -133,4 +133,6 @@ CREATE FUNCTION pgos_snapshot_probe.view(regclass) RETURNS jsonb
 AS '$libdir/pg_onesearch_snapshot_probe','pgos_snapshot_view' LANGUAGE C STRICT VOLATILE PARALLEL UNSAFE;
 CREATE FUNCTION pgos_snapshot_probe.search(regclass,jsonb) RETURNS jsonb
 AS '$libdir/pg_onesearch_snapshot_probe','pgos_snapshot_search' LANGUAGE C STRICT VOLATILE PARALLEL UNSAFE;
+CREATE FUNCTION pgos_snapshot_probe.check_health(regclass) RETURNS void
+AS '$libdir/pg_onesearch_snapshot_probe','pgos_snapshot_check_health' LANGUAGE C STRICT VOLATILE PARALLEL UNSAFE;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA pgos_snapshot_probe FROM PUBLIC;
