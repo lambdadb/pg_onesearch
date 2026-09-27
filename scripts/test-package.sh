@@ -11,6 +11,7 @@ tar -xzf /artifacts/pg_onesearch-0.1.0-dev-pg18.6-debian12-arm64.tar.gz -C /
 # The fault-injection module must not enter the evaluation package.
 test ! -e /usr/lib/postgresql/18/lib/pg_onesearch_commit_probe.so
 test ! -e /usr/lib/postgresql/18/lib/pg_onesearch_lifecycle_probe.so
+test ! -e /usr/lib/postgresql/18/lib/pg_onesearch_snapshot_probe.so
 export PGDATA=/tmp/onesearch-clean PGHOST=/tmp PGUSER=postgres
 install -d -o postgres -g postgres "$PGDATA"
 gosu postgres initdb --no-locale --encoding=UTF8 --auth=trust >/dev/null
@@ -21,6 +22,9 @@ CREATE EXTENSION pg_onesearch;
 SELECT onesearch.cosine_distance('[1,0]', '[0,1]') AS distance;
 SELECT extname, extversion FROM pg_extension ORDER BY extname;
 DO $$ BEGIN
+    IF to_regnamespace('pgos_snapshot_probe') IS NOT NULL THEN
+        RAISE EXCEPTION 'snapshot probe leaked into product installation';
+    END IF;
     IF to_regnamespace('pgos_replay_probe') IS NOT NULL THEN
         RAISE EXCEPTION 'replay probe leaked into product installation';
     END IF;

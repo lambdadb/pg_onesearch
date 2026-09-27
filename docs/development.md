@@ -96,7 +96,9 @@ generations to a logged source registry and outbox. Trigger-based capture covers
 source DML, HOT, PK changes, rollback, and durable retirement records. It remains
 a separate SQL prototype. The [batch replay experiment](batch-replay-spike.md) adds
 a synchronous test worker, per-attempt Branch isolation, verified Tags, and atomic
-PG publication/exact outbox deletion. Neither prototype activates search.
+PG publication/exact outbox deletion. The [snapshot reader](snapshot-read-spike.md)
+connects those tables to explicit C/SQL JSON queries: bounded complete vector
+overlays and same-corpus BM25 reads. Product IAM/Custom Scan activation remains open.
 
 | Area | Required next evidence |
 | --- | --- |
@@ -104,7 +106,7 @@ PG publication/exact outbox deletion. Neither prototype activates search.
 | BM25 SQL | [Concrete SQL proposal](sql-client-contract.md) specifies match/score binding and bounded query shapes. The isolated [Custom Scan proof](executor-spike.md) binds scores to execution state; product index binding, analyzer fixtures, and corpus/overlay statistics remain open. |
 | Commit response | The separate probe validates an AFTER_LOCKS candidate for specific PG18.6 schedules, including cancellation. Execute+Flush can deliver CommandComplete before commit; [18 actual-client scenarios](client-contract-validation.md) distinguish execute/commit, warnings, cancellation, and prior transaction errors. Audit cleanup-phase safety and enforce protocol scope before adopting the candidate. See [evidence](commit-worker-spike.md). |
 | Outbox/worker | [Atomic capture proof](change-capture-spike.md) covers savepoints, failures, HOT, late smaller IDs, and crash recovery. [Bounded replay proof](batch-replay-spike.md) adds frozen membership, attempt fencing, readiness and atomic publication/deletion. Production scheduling, large backlogs, retention/backpressure and broader fault tests remain open. |
-| Reads/health | Same-snapshot Tag and delta, own writes, old snapshots, per-index outage guard for cached plans/rescans, recovery races. |
+| Reads/health | [Statement-snapshot proof](snapshot-read-spike.md) covers Tag/delta/heap MVCC, vector own writes, prepared calls and fresh injected health. Coherent BM25 overlays, actual scan integration, durable health detection/recovery and scalable row-version lookup remain open. |
 | Remote protocol | [Live compatibility experiment](live-compatibility.md) adds isolated vector/BM25 fixtures, a final indexed-marker barrier, immutable Tags, and response/score checks. Ranked continuation, production replay coverage, and BM25 overlay/statistics remain gates. The original skeleton required no credentials; the opt-in REST harness uses an ignored environment file. |
 | Identity/lifecycle | [Local generation/DDL proof](index-lifecycle-spike.md) covers independent index generations and transactional physical replacement. The capture/replay probes add source epochs and owned remote bindings. Production remote cleanup, replacement activation, PK/TID/version mapping, HOT/pruning/TID reuse, and physical-restore fencing remain open. |
 | Release | Maintainer, license, numerical SLOs, pilot workload, compatibility/upgrade formats and distribution policy. Repository visibility is public; branch rulesets remain organization-managed. |
