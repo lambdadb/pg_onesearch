@@ -117,6 +117,11 @@ Remaining gates: approved/server-implemented coherent BM25 overlay, scalable
 source lookup and ranked continuation, product IAM/planner/API integration,
 operational recovery/retention, commit-wait, security, isolation and scale.
 
+The [accepted stabilization scope](development.md#accepted-stabilization-scope--2026-09-27)
+defers the BM25 server overlay gate and keeps changed-corpus rejection while
+stabilizing the other paths. These remaining product gates are not evidence
+that the original full transaction-search milestone has been completed.
+
 ### Live result, 2026-09-27
 
 The [sanitized evidence](evidence/snapshot-executor-2026-09-27.json) records a passed
