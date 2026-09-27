@@ -110,9 +110,11 @@ rows and both index generations.
 
 ## Next integration gates
 
-Next implement a durable source/index registry and atomic row-change capture,
-including deletes, PK changes, HOT, savepoints, and transaction ordering. Tie
-generation replacement to durable creation/retirement work before remote DDL.
+The later [capture experiment](change-capture-spike.md) adds logged source/index
+records, initial seed capture, DML/PK/HOT capture, and durable retirement work.
+Explicit re-registration binds a rebuilt generation; it does not automatically
+activate rebuilt indexes or solve replay ordering. Tie generation replacement
+to fenced remote creation/retirement before enabling remote DDL.
 Then integrate fenced replay, verified Tags and PG publication, and the executor's
 snapshot/own-write contract. BM25 corpus overlays and ranked continuation remain
 separate required gates. Drop/restore must never erase pending cleanup obligations
