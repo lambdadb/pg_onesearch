@@ -98,7 +98,8 @@ obligations. This does not implement replacement-index activation or cleanup.
 ./scripts/test-batch-replay.sh --reuse-capture-image
 ```
 
-The credential-free suite uses real PG transactions, lifecycle indexes and WAL
+All 17 offline tests passed locally and in [CI](https://github.com/lambdadb/pg_onesearch/actions/runs/36317443792)
+at source revision `32dc9aa`. The credential-free suite uses real PG transactions, lifecycle indexes and WAL
 recovery, with a deterministic REST fixture for remote failure injection. It
 covers initial/delta coalescing and batched requests; late smaller IDs; actual
 same-key lock waits; concurrent claims; frozen membership; stale workers; lost
@@ -124,8 +125,27 @@ on stdin, and saves a sanitized report. Cleanup discovers versions even if the
 worker failed before returning its attempt records, verifies collection ownership,
 deletes fixture Tags/Branches, and confirms collection absence. No credentials,
 server response bodies, or signed download URLs are written to evidence. The
-live outcome will be recorded separately after execution; no production runtime
-or server deployment revision is pinned by this harness.
+live report pins probe source and container inputs; no production runtime or
+server deployment revision is pinned by this harness.
+
+### Live result, 2026-09-27
+
+The [sanitized evidence](evidence/batch-replay-2026-09-27.json) records a successful
+run at clean source `32dc9aa7ca58e1077d867d2de4b9b702b560b917`, with image ID and
+per-file hashes checked before execution. Each modality published an initial
+batch covering 3 events (create + 2 documents), then a change batch covering
+6 events. The change sequence included an intermediate update, PK move, delete,
+and two inserts. Final documents were `10`, `4`, and `5`; old Tags retained `1`
+and `2`. Both delta Branches reported the exact preceding Tag snapshot as their
+parent/head before applying writes.
+
+The six data requests carried 2, 2, 2, 3, 2, and 3 documents/IDs, respectively;
+four separate final marker writes provided barriers. Marker polling and Tag
+verification took 62.983, 62.958, 56.474, and 71.546 seconds for the four batches.
+These are observations from one tiny controlled run, not a latency SLO or
+throughput result. All four Tags and four non-main Branches were deleted, and
+both collection GETs returned 404 during cleanup. Retry and crash cases were
+injected locally; this live run exercised successful initial and delta replay.
 
 The next integration gate is a PG snapshot-bound publication/delta reader with
 stable row-version identity and own writes. The real executor and commit-response
