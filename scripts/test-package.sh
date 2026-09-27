@@ -10,6 +10,7 @@ set -eu
 tar -xzf /artifacts/pg_onesearch-0.1.0-dev-pg18.6-debian12-arm64.tar.gz -C /
 # The fault-injection module must not enter the evaluation package.
 test ! -e /usr/lib/postgresql/18/lib/pg_onesearch_commit_probe.so
+test ! -e /usr/lib/postgresql/18/lib/pg_onesearch_lifecycle_probe.so
 export PGDATA=/tmp/onesearch-clean PGHOST=/tmp PGUSER=postgres
 install -d -o postgres -g postgres "$PGDATA"
 gosu postgres initdb --no-locale --encoding=UTF8 --auth=trust >/dev/null

@@ -86,6 +86,11 @@ through actual PG plans, with scan-owned scores, prepared statements, and
 correlated rescans. It is limited to a frozen five-row fixture; it does not
 implement an index access method, mutable-source synchronization, or own writes.
 
+The separate [IAM lifecycle experiment](index-lifecycle-spike.md) adds real local
+index relations with WAL-backed generation metadata, transactional rebuild/drop,
+recovery, and logical-restore tests. Its indexes remain unpublished and reject
+every search. It does not connect the Custom Scan experiment to product indexes.
+
 | Area | Required next evidence |
 | --- | --- |
 | First E2E milestone | Both remote vector and BM25 indexes, actual index plans, mutation/search reference comparisons, source retention across index lifecycle. BM25 remains in this milestone. |
@@ -94,7 +99,7 @@ implement an index access method, mutable-source synchronization, or own writes.
 | Outbox/worker | Atomic capture, savepoints, fenced ordered replay, late smaller IDs, idempotency, readiness barrier, atomic publication/deletion, retention/backpressure and fault tests. |
 | Reads/health | Same-snapshot Tag and delta, own writes, old snapshots, per-index outage guard for cached plans/rescans, recovery races. |
 | Remote protocol | [Live compatibility experiment](live-compatibility.md) adds isolated vector/BM25 fixtures, a final indexed-marker barrier, immutable Tags, and response/score checks. Ranked continuation, production replay coverage, and BM25 overlay/statistics remain gates. The original skeleton required no credentials; the opt-in REST harness uses an ignored environment file. |
-| Identity/lifecycle | Source epochs/index generations, PK/TID/version mapping, HOT/pruning/VACUUM/TID reuse, builds/rebuilds/cleanup and restore fencing. |
+| Identity/lifecycle | [Local generation/DDL proof](index-lifecycle-spike.md) covers independent index generations and transactional physical replacement. Durable source epochs, remote registry/cleanup, PK/TID/version mapping, HOT/pruning/TID reuse, and physical-restore fencing remain open. |
 | Release | Maintainer, license, numerical SLOs, pilot workload, compatibility/upgrade formats and distribution policy. Repository visibility is public; branch rulesets remain organization-managed. |
 
 The [SQL/client proposal](sql-client-contract.md) records the next contract stage
