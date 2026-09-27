@@ -124,3 +124,12 @@ algorithm, global aggregation/routing, query-language coverage, admission limits
 continuation and cancellation/retry lifetime. The first server experiment should
 make these boundaries explicit and reject unsupported scope. Only after server
 implementation and actual PG/remote validation should changed-corpus BM25 be enabled.
+
+### Recorded local result, 2026-09-27
+
+The [source/image-bound report](evidence/bm25-overlay-2026-09-27.json) records all
+14 cases passing at clean implementation `edd7e37`. Six visibility-only controls
+have the expected score mismatch, while the effective-statistics candidate matches
+the rebuilt oracle in every comparison. The old-top-k case records old winner `b`
+and new winner `a`. This evidence is from an isolated Linux arm64 JVM with no
+network; no live LambdaDB or PostgreSQL run is represented by this report.
