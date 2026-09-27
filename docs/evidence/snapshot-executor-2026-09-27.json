@@ -1,0 +1,966 @@
+{
+  "run_id": "4d125325aaa248a88c207287a48440d7",
+  "started_at": "2026-09-27T13:05:11.224004+00:00",
+  "status": "passed",
+  "source_revision": "0c84b607be3da2a4ecfe6eefd0781dae4524b2d0",
+  "worktree_dirty": false,
+  "image_id": "sha256:139ec1d1c8438282e55e2a2ca768f7ee78cec424356b48d43d5a6fbf6027f641",
+  "files_sha256": {
+    "spikes/remote_read/Dockerfile": "fc9626213234a7a2418f0aa68e9b729850f3d76c9fa28526de174badb55d2233",
+    "spikes/remote_read/Makefile": "d25a7cc2d8a9887be802d4cb4e69f21819b2291c45ec94d37ea744ae984094c7",
+    "spikes/remote_read/bootstrap.py": "2124de7bad4fa5a41fc19a5961ffeb4e4eccc623e42ff519c0ecd0e6432cb39f",
+    "spikes/remote_read/http.c": "9b7c9de979695137ca0637919510306e89e552a3c0c20ad676099f747731e16b",
+    "spikes/remote_read/http.h": "5f3ffd58516c882cfeb7e6d5dfdaf915934e839be519f14a154a501f42818a5e",
+    "spikes/remote_read/live.py": "c08e456b075da90fbd97515359649f782e540d9bba5e853eceba4c760836cfd4",
+    "spikes/remote_read/offline.py": "a293c843ff39a429ff8e1f73b47fefdfdbec5c62700b829bb5eeb75e219784c4",
+    "spikes/remote_read/probe.c": "4bfab1da3b83753757a8112eed0298cdfc441c6e2f1600ab653192db190cbc1b",
+    "spikes/remote_read/run.sh": "cdff31eb587037670f4f3605f7d726a019b76336a388ed55d5beb69efd2a4a90",
+    "spikes/remote_read/run_live.py": "42344c02b413ddcfa5098a516ee79538e9140eea8666a4291506d360f0d778e6",
+    "spikes/remote_read/setup.sql": "e1ceffdd8d18552f4d63dd733a010de372d2b6d3e1efe72f346a5be4b5589988",
+    "spikes/index_lifecycle/Dockerfile": "d091460eda7747a584bf4f2e41086c384ad888f1b5700048af8c7912478f9016",
+    "spikes/index_lifecycle/Makefile": "a9ae16194fcb194171982a197cbd3a7396b0f8cd20d6efa07a79e77bd804e730",
+    "spikes/index_lifecycle/lifecycle.c": "b566179cbdb6152494d879eaa24c66b3225605974d4fd01557c10596b05bc927",
+    "spikes/index_lifecycle/run.sh": "90152f4fa9f6748e3c7e85c5e04f4e6dbcfc930675cc58c8e5b9393bf8e22c35",
+    "spikes/index_lifecycle/setup.sql": "9d016efa91cc08b06e767740e22da09cfdfed69598219277048ffd1ee7e77c48",
+    "spikes/index_lifecycle/test.py": "8c8d0b01b092258756dedff87c8bf4b018b2012cc8e2a3be1fd9fa7fe42bb88b",
+    "spikes/change_capture/Dockerfile": "d802a7a67fed4e90439c3383b5b5b1839ac87cab90f11c9a3491ce32c124b809",
+    "spikes/change_capture/run.sh": "2eeacd4307fbb5acbd90fd3bbd2b34d70858b3ec809f5af7d2a625f882c3112b",
+    "spikes/change_capture/setup.sql": "e129b571cdad82ea934863a51a89224eac951624c217f767b785e19bfcb0b395",
+    "spikes/change_capture/test.py": "c57e416a1825dd0421a0b982f767ed46c936b75bca2322b3a4d398c65e51354e",
+    "spikes/batch_replay/Dockerfile": "0ee8190df81feb64e08dc9d61fc31d01d3199b902f8cd9943ef3c80575aa2b1b",
+    "spikes/batch_replay/bootstrap.py": "effea427458ba661e6d2d26b47604646f2fe66ddbc9e3e2f09a2c8a5c0a4fef8",
+    "spikes/batch_replay/live.py": "35de319af141ff7a4505707085e95b3d04b93158c1d2bf82cbf4946434eddaf1",
+    "spikes/batch_replay/run.sh": "a8cc270db69a9fa1269d5c5da328e14e32e2231695be843986c5f1bf9a2c4e80",
+    "spikes/batch_replay/run_live.py": "1337253647ec3dc98a31f06710a502f8af0faefd15056ee5a89a2b7465381d55",
+    "spikes/batch_replay/setup.sql": "9820120f9029872e15b196c23c8f3ba0154a7d09ffbfeefa99de1e39ce1e4188",
+    "spikes/batch_replay/test.py": "ab7995cc4e9d404bf855835ef9614b9f786e97e234fc38aeef8f98f2778debc2",
+    "spikes/batch_replay/worker.py": "6cfd2554e52b884ac35b0910789e83a866ae352c4a581d270d35f47d9684289c",
+    "spikes/live_compatibility/client.py": "c6d2c25a2ac77d6b39faf6860ed9a1abc69b0852888197cb5ff859504e7bfb83",
+    "spikes/live_compatibility/run.py": "c734a81bf9ae5f475c0453b9cd52c21f564e960b74a47499f1a1c48ccbf1804f",
+    "spikes/live_compatibility/test_offline.py": "6a0f87175a881946c336e8e94e984050bd1a2167b980ad702f02168de6920bb2",
+    "spikes/snapshot_read/Dockerfile": "9b2f06a47ab616937debeb9d45659dd672f42d1c898c8ed5d6296c1342fc36e2",
+    "spikes/snapshot_read/Makefile": "db7d7bcde7e04dcfd2b2823c8f3343cca4d1652780c43948d245d1bf5fe8c6d1",
+    "spikes/snapshot_read/bootstrap.py": "f3b90494026a5dde18d2b907d7ecb8e1a615fc6d5e3fd6d21fc21adff983e8ac",
+    "spikes/snapshot_read/live.py": "10d9992e65fecebeb6dbe258e59fc39d0b413f64f349b156569c7598719a6fbd",
+    "spikes/snapshot_read/offline.py": "1bcbc9e412dde265255e9ab9016aac9f388d3766cde135395d77308be9d3dde4",
+    "spikes/snapshot_read/run.sh": "fb1de08854042e64cf5c0986c3ab602037691dc843f6bc664e405edd575f3d42",
+    "spikes/snapshot_read/run_live.py": "d5e219414d62e77a995c449c314de5f409af96c716a68de614890179f6b99b65",
+    "spikes/snapshot_read/setup.sql": "8210b26ff4e14d18e4637006b2e5422663bb88faa6df682267ba0035bb1c414c",
+    "spikes/snapshot_read/snapshot.c": "8044364c3a5bfdd5b3fa87a461d95ca8310df754a2f2c12cab447946c093fc5e",
+    "spikes/snapshot_read/test_cleanup.py": "745898fe818177459a5542a67be7fa07eef666837ed732907be2572cc71b05d3",
+    "spikes/snapshot_executor/Dockerfile": "bf4c21f17527fe70b11df3c9b1a3e41ec31201edfd41ae879c205277b80ba6ac",
+    "spikes/snapshot_executor/Makefile": "ba5097105d8d275791adebea0f31e6dd881a7bf1927b9e99e42cb498898f3b5b",
+    "spikes/snapshot_executor/bootstrap.py": "64892463eb50141fef56c5148e4fdf7bb268a8f53564b83d702e531246159fef",
+    "spikes/snapshot_executor/executor.c": "87e03b172c3b0122f584d5ef215176988a4e1887a00abeda3d939cca9f7a62e3",
+    "spikes/snapshot_executor/live.py": "b0a7f8f8d35c3c25edf6d6591cdec7972ab2c307a938f014a5190787496ad933",
+    "spikes/snapshot_executor/offline.py": "5d434066b50c881b8f0f61906b0615c62d560b226d87f7b02bf9a3678b28c47c",
+    "spikes/snapshot_executor/run.sh": "59e5682bae2f1bc328c0796f099a91d4f9ad6b0781bbfab731fcd7232d9b335e",
+    "spikes/snapshot_executor/run_live.py": "48c7a692e8c7a6b0d379f1381701a8d399111bd2165a634c8afc752806ca92a2",
+    "spikes/snapshot_executor/setup.sql": "611e9dd4cf0bb2c1f4acaff93eed553659705b794d2e6d152857e66993eec248"
+  },
+  "checks": [
+    {
+      "name": "vector: create independent collection"
+    },
+    {
+      "name": "bm25: create independent collection"
+    }
+  ],
+  "writes": [],
+  "resources": [
+    {
+      "name": "pgos-live-4d125325aaa248a88c20-vector",
+      "role": "vector",
+      "tags": [
+        "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+        "attempt-a205cc85b0554448ac1b51dc0a0fdf2b"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true,
+      "branches": [
+        "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+        "attempt-a205cc85b0554448ac1b51dc0a0fdf2b"
+      ]
+    },
+    {
+      "name": "pgos-live-4d125325aaa248a88c20-bm25",
+      "role": "bm25",
+      "tags": [
+        "attempt-a51697a307f343d9921983621e0006c5",
+        "attempt-f7d806c6bc03427d98f00ed122f3bded"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true,
+      "branches": [
+        "attempt-a51697a307f343d9921983621e0006c5",
+        "attempt-f7d806c6bc03427d98f00ed122f3bded"
+      ]
+    }
+  ],
+  "container_name": "pgos-snapshot-4d125325aaa248a8",
+  "snapshot_executor": {
+    "status": "passed",
+    "checks": [
+      "Own PK move/delete/insert, source note projection, other-session isolation and savepoint rollback",
+      "Prepared Custom Scans refresh Tags; vector delta/filter/LIMIT and same-Tag BM25 verified; changed BM25 corpus/degraded vector rejected"
+    ],
+    "reads": [
+      {
+        "role": "vector",
+        "phase": "initial",
+        "tag": "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+        "rows": [
+          [
+            1,
+            "a",
+            0.0
+          ],
+          [
+            2,
+            "b",
+            1.0
+          ]
+        ]
+      },
+      {
+        "role": "bm25",
+        "phase": "initial",
+        "tag": "attempt-f7d806c6bc03427d98f00ed122f3bded",
+        "rows": [
+          [
+            1,
+            "a",
+            0.31506687
+          ]
+        ]
+      },
+      {
+        "role": "bm25",
+        "phase": "own-note-only",
+        "tag": "attempt-f7d806c6bc03427d98f00ed122f3bded",
+        "rows": [
+          [
+            1,
+            "own note",
+            0.31506687
+          ]
+        ]
+      },
+      {
+        "role": "vector",
+        "phase": "own-writes",
+        "tag": "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+        "rows": [
+          [
+            4,
+            "own",
+            1.0
+          ],
+          [
+            -10,
+            "own note",
+            2.0
+          ]
+        ]
+      },
+      {
+        "role": "vector",
+        "phase": "own-rollback",
+        "tag": "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+        "rows": [
+          [
+            1,
+            "a",
+            0.0
+          ],
+          [
+            2,
+            "b",
+            1.0
+          ]
+        ]
+      },
+      {
+        "role": "vector",
+        "phase": "committed-lag",
+        "tag": "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+        "rows": [
+          [
+            4,
+            "committed",
+            1.0
+          ],
+          [
+            5,
+            "committed",
+            1.0
+          ],
+          [
+            1,
+            "a",
+            2.0
+          ]
+        ]
+      },
+      {
+        "role": "vector",
+        "phase": "republished",
+        "tag": "attempt-a205cc85b0554448ac1b51dc0a0fdf2b",
+        "rows": [
+          [
+            4,
+            "committed",
+            1.0
+          ],
+          [
+            5,
+            "committed",
+            1.0
+          ],
+          [
+            1,
+            "a",
+            2.0
+          ]
+        ]
+      },
+      {
+        "role": "bm25",
+        "phase": "republished",
+        "tag": "attempt-a51697a307f343d9921983621e0006c5",
+        "rows": [
+          [
+            1,
+            "a",
+            0.25753623
+          ],
+          [
+            5,
+            "committed",
+            0.23797652
+          ]
+        ]
+      },
+      {
+        "role": "bm25",
+        "phase": "healthy-sibling",
+        "tag": "attempt-a51697a307f343d9921983621e0006c5",
+        "rows": [
+          [
+            1,
+            "a",
+            0.25753623
+          ],
+          [
+            5,
+            "committed",
+            0.23797652
+          ]
+        ]
+      }
+    ],
+    "plans": [
+      {
+        "phase": "initial",
+        "role": "vector",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 25.415,
+          "Actual Total Time": 25.416,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(onesearch.cosine_distance(embedding, '[1,0,0]'::onesearch.vector))",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 74,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 25.245,
+              "Actual Total Time": 25.413,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "Vector",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 74,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "initial",
+        "role": "bm25",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 26.959,
+          "Actual Total Time": 26.959,
+          "Actual Rows": 1.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(pgos_snapshot_executor.score('txt'::regclass, id)) DESC",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 70,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 26.844,
+              "Actual Total Time": 26.957,
+              "Actual Rows": 1.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "BM25",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-f7d806c6bc03427d98f00ed122f3bded",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 70,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "own-note-only",
+        "role": "bm25",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 25.944,
+          "Actual Total Time": 25.945,
+          "Actual Rows": 1.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(pgos_snapshot_executor.score('txt'::regclass, id)) DESC",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 70,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 25.828,
+              "Actual Total Time": 25.943,
+              "Actual Rows": 1.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "BM25",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-f7d806c6bc03427d98f00ed122f3bded",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 70,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "own-writes",
+        "role": "vector",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 24.827,
+          "Actual Total Time": 24.827,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(onesearch.cosine_distance(embedding, '[1,0,0]'::onesearch.vector))",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 74,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 24.67,
+              "Actual Total Time": 24.824,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "Vector",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 74,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "own-rollback",
+        "role": "vector",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 24.746,
+          "Actual Total Time": 24.747,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(onesearch.cosine_distance(embedding, '[1,0,0]'::onesearch.vector))",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 74,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 24.548,
+              "Actual Total Time": 24.744,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "Vector",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 74,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "committed-lag",
+        "role": "vector",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 25.788,
+          "Actual Total Time": 25.788,
+          "Actual Rows": 3.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(onesearch.cosine_distance(embedding, '[1,0,0]'::onesearch.vector))",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 82,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 25.543,
+              "Actual Total Time": 25.785,
+              "Actual Rows": 3.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "Vector",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-26b8b8a0759c4c7b90cf6fbdf8804b3c",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 82,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "republished",
+        "role": "vector",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 26.296,
+          "Actual Total Time": 26.297,
+          "Actual Rows": 3.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(onesearch.cosine_distance(embedding, '[1,0,0]'::onesearch.vector))",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 83,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 25.88,
+              "Actual Total Time": 26.294,
+              "Actual Rows": 3.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "Vector",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-a205cc85b0554448ac1b51dc0a0fdf2b",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 83,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "republished",
+        "role": "bm25",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 24.774,
+          "Actual Total Time": 24.774,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(pgos_snapshot_executor.score('txt'::regclass, id)) DESC",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 83,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 24.507,
+              "Actual Total Time": 24.772,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "BM25",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-a51697a307f343d9921983621e0006c5",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 83,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "healthy-sibling",
+        "role": "bm25",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 26.499,
+          "Actual Total Time": 26.5,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(pgos_snapshot_executor.score('txt'::regclass, id)) DESC",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 83,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 26.341,
+              "Actual Total Time": 26.497,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "BM25",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-a51697a307f343d9921983621e0006c5",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 83,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      }
+    ],
+    "writes": [
+      {
+        "attempt": "26b8b8a0-759c-4c7b-90cf-6fbdf8804b3c",
+        "operation": "upsert",
+        "size": 2
+      },
+      {
+        "attempt": "f7d806c6-bc03-427d-98f0-0ed122f3bded",
+        "operation": "upsert",
+        "size": 2
+      },
+      {
+        "attempt": "a205cc85-b055-4448-ac1b-51dc0a0fdf2b",
+        "operation": "delete",
+        "size": 1
+      },
+      {
+        "attempt": "a205cc85-b055-4448-ac1b-51dc0a0fdf2b",
+        "operation": "upsert",
+        "size": 3
+      },
+      {
+        "attempt": "a51697a3-07f3-43d9-9219-83621e0006c5",
+        "operation": "delete",
+        "size": 1
+      },
+      {
+        "attempt": "a51697a3-07f3-43d9-9219-83621e0006c5",
+        "operation": "upsert",
+        "size": 3
+      }
+    ],
+    "barriers": [
+      {
+        "attempt": "26b8b8a0-759c-4c7b-90cf-6fbdf8804b3c",
+        "parent_snapshot": null,
+        "snapshot_id": "a61514f8-8428-4c11-9d35-5a2b7b761361",
+        "polls": 52,
+        "elapsed_seconds": 106.758
+      },
+      {
+        "attempt": "f7d806c6-bc03-427d-98f0-0ed122f3bded",
+        "parent_snapshot": null,
+        "snapshot_id": "8f23974a-98e7-4d52-a84f-f232331ee658",
+        "polls": 23,
+        "elapsed_seconds": 46.419
+      },
+      {
+        "attempt": "a205cc85-b055-4448-ac1b-51dc0a0fdf2b",
+        "parent_snapshot": {
+          "snapshotId": "a61514f8-8428-4c11-9d35-5a2b7b761361",
+          "snapshotCommittedAt": 1790514417215
+        },
+        "snapshot_id": "52491c47-4b52-4e0c-b365-70d0e997b167",
+        "polls": 25,
+        "elapsed_seconds": 50.387
+      },
+      {
+        "attempt": "a51697a3-07f3-43d9-9219-83621e0006c5",
+        "parent_snapshot": {
+          "snapshotId": "8f23974a-98e7-4d52-a84f-f232331ee658",
+          "snapshotCommittedAt": 1790514464895
+        },
+        "snapshot_id": "309afcec-7544-47cf-8949-49e53944e374",
+        "polls": 31,
+        "elapsed_seconds": 62.59
+      }
+    ]
+  },
+  "container_remove_returncode": 0,
+  "container_cleanup": "confirmed_absent",
+  "finished_at": "2026-09-27T13:09:43.849066+00:00"
+}

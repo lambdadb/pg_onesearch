@@ -116,3 +116,29 @@ not implied by the separate local fixture tests. No server revision is pinned.
 Remaining gates: approved/server-implemented coherent BM25 overlay, scalable
 source lookup and ranked continuation, product IAM/planner/API integration,
 operational recovery/retention, commit-wait, security, isolation and scale.
+
+### Live result, 2026-09-27
+
+The [sanitized evidence](evidence/snapshot-executor-2026-09-27.json) records a passed
+run at clean implementation `0c84b607be3da2a4ecfe6eefd0781dae4524b2d0`, from
+13:05:11–13:09:43 UTC, with source hashes matched to the pinned image. The
+[full CI run](https://github.com/lambdadb/pg_onesearch/actions/runs/36321200098)
+also passed for that implementation, including all existing probe/package checks.
+
+Nine recorded typed reads comprise five vector/PG reference comparisons and four
+BM25/same-Tag REST comparisons. Each phase also records a real EXPLAIN ANALYZE
+Custom Scan and its selected Tag. Note-only own writes returned the current note
+with unchanged BM25 scores. Own PK move/delete/insert produced vector IDs `4,-10`,
+while another session retained `1,2`; savepoint rollback restored `1,2`.
+Committed unpublished changes returned `4,5,1` against the old Tag, and the prepared
+query returned the same values against the next published Tag. Changed-corpus BM25
+was rejected before publication, then returned IDs `1,5` after replay. Injected
+vector degradation rejected prepared execution while BM25 and ordinary PG remained
+usable. Additional vector SQL filter/LIMIT comparisons passed in each vector phase.
+
+Four indexed-marker barriers took 106.758, 46.419, 50.387 and 62.590 seconds;
+these are fixture observations, not an SLO. Data RPCs grouped operations into
+2/2/1/3/1/3 documents or IDs, followed by separate marker writes. The worker
+container was confirmed absent before remote cleanup. All four Tags and four
+non-main Branches were deleted, and both owned collections were confirmed absent.
+The evidence contains synthetic fixture data and no environment connection values.
