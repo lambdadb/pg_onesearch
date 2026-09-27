@@ -5,3 +5,8 @@
 results
 regression.*
 artifacts
+
+# Local connection settings and credentials.
+.env
+.env.*
+!.env.example
