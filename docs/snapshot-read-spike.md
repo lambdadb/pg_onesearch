@@ -16,7 +16,8 @@ publication lag may use the complete delta. A degraded index must fail rather
 than silently return stale results or fall back to a different BM25 implementation.
 
 Selected bounds: superuser, ordinary permanent source table with an immediate
-bigint primary key, READ COMMITTED, separate SELECTs after source statements,
+bigint primary key, exclusively owned collections populated by the replay probe,
+READ COMMITTED, separate SELECTs after source statements,
 64 physical source rows and 64 base documents, at most 64 publication ancestors /
 4,096 historical events / 1,000 visible delta events, and a 4 MiB materialized view.
 These are experiment admission limits, not product limits or hard peak-memory
@@ -121,7 +122,8 @@ is assumed here.
 ./scripts/test-snapshot-read.sh --reuse-transport-image
 ```
 
-Thirteen tests use actual PG snapshots, capture/replay tables, C/libcurl and a
+Thirteen tests passed locally and in [CI](https://github.com/lambdadb/pg_onesearch/actions/runs/36318946835)
+at implementation revision `adb9b26`. They use actual PG snapshots, capture/replay tables, C/libcurl and a
 local TLS server with deterministic immutable Tag fixtures. They cover both base
 query modes, own PK move/delete/insert/NULL/savepoint rollback, other transactions,
 committed lag, publication/VACUUM concurrency, fresh health under old snapshots and
@@ -157,7 +159,30 @@ before/after own writes, rollback, committed lag, and republishing. C BM25 resul
 are compared to Python REST results from the exact same Tag; vector results are
 compared to local PG cosine. It also checks prepared health failure and a healthy
 sibling. Version/collection cleanup is ownership-checked, with final absence
-confirmation. Live evidence is recorded separately after execution.
+confirmation. No deployed server revision is pinned by this harness.
+
+### Live result, 2026-09-27
+
+The [sanitized evidence](evidence/snapshot-read-2026-09-27.json) records a passed run
+at clean implementation `adb9b2632d385ddf293d4fd1bec81077d2412067` from
+12:25:14–12:29:44 UTC, with all probe/transport input hashes checked against the
+pinned container. Eight recorded SQL reads include five vector comparisons with
+ordinary PG cosine and three BM25 comparisons with Python REST on the same Tag.
+
+Own PK move/delete/insert returned vector IDs `4,10` under the unchanged initial
+Tag; another session still saw `1,2`. Savepoint rollback restored `1,2`. Committed
+but unpublished changes returned `4,5,1` in distance order against the old Tag;
+after replay, the same captured revisions/results used the new Tag. Changed-corpus
+BM25 failed during own writes and committed lag, then returned matching same-Tag
+IDs/scores after publication. Injected vector degradation rejected a prepared
+query while BM25 and ordinary PG reads remained usable.
+
+Four final marker barriers took 82.092, 71.498, 58.469 and 50.705 seconds. These
+fixture observations are not a latency SLO. Data requests were grouped by
+operation (2/2/1/3/1/3 documents or IDs), followed by separate marker writes.
+All four Tags and four non-main Branches were deleted and both owned collections
+were confirmed absent. Publication/VACUUM races and malformed remote responses
+were tested locally; the live run did not inject those server-side failures.
 
 Remaining product gates: coherent BM25 overlay, integration into the actual
 Custom Scan/typed result path, source row-version lookup without a full scan,
