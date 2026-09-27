@@ -1,6 +1,7 @@
 CREATE SCHEMA pgos_snapshot_probe;
 REVOKE ALL ON SCHEMA pgos_snapshot_probe FROM PUBLIC;
--- A durable fault-injection flag, not automatic operational failure detection/recovery.
+-- An additional fault-injection veto. True cannot override missing publication
+-- or a pending replay batch; the C reader checks those durable protocol states.
 CREATE TABLE pgos_snapshot_probe.health (
     generation uuid PRIMARY KEY REFERENCES pgos_capture_probe.generations,
     healthy boolean NOT NULL

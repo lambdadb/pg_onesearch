@@ -69,8 +69,40 @@ health is checked at begin, fetch, rescan, score access and before/after each
 `ExecScan` call; the reader also checks before/after HTTP. A failure during a row
 projection is detected before that scan call returns. This does not asynchronously
 revoke rows already returned or stored by parent nodes such as Sort/Materialize.
-Production failure detection/recovery and stronger parent-node revocation remain
-unimplemented; the health table is still an explicit fault-injection control.
+The shared reader guard now derives replay readiness from the logged publication
+and absence of a pending batch, in addition to the test-health veto. A committed
+claim conservatively blocks the affected index even while replay is progressing;
+committed publication restores eligibility subject to the remaining snapshot and
+health checks. General production failure detection/recovery and stronger
+parent-node revocation remain unimplemented.
+
+### Replay failure and recovery coverage
+
+The credential-free executor suite adds seven tests for the durable replay gate:
+
+- Lost write/Tag acknowledgements and invalid Tag markers block both vector and
+  same-corpus BM25, including generic prepared execution, before search HTTP.
+  Exact outbox records and committed source rows survive; sibling indexes remain
+  usable; a fresh attempt restores eligible reads.
+- Actual worker subprocesses are killed with SIGKILL after committed claim or
+  attempt creation. No worker failure callback is needed to keep reads blocked.
+- A verified Tag, rolled-back or uncommitted PG publication, a stale attempt,
+  and an idempotent older receipt cannot clear a pending generation's guard.
+- An immediate PG shutdown with publication uncommitted preserves the pending
+  batch and outbox through WAL recovery, then fresh replay restores search.
+- Losing the response after publication committed does not degrade the index;
+  retry without new events is a no-op.
+- A claim committed during search HTTP is detected using current operational
+  state even though the statement's data snapshot predates the claim.
+- Publishing a frozen batch leaves later BM25 changes rejected with `0A000`;
+  successful replay does not override a separate false test-health flag.
+
+The updated suite passes 19 executor tests, plus the 13 reader tests. These use
+real PostgreSQL, C/libcurl and a local TLS search fixture; remote write/Tag
+failures are simulated by the deterministic replay adapter fixture. They are
+not live LambdaDB fault-injection evidence, production worker scheduling, or
+commit-wait integration. The existing live results below describe the earlier
+revision and do not validate the new replay gate against a deployed service.
 
 `EXPLAIN` performs no HTTP; `EXPLAIN ANALYZE` reports actual Custom Scan provider,
 mode, successful remote queries, rescans and the last selected Snapshot Tag.

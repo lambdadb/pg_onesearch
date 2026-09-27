@@ -84,6 +84,15 @@ it cannot write into the winner's Branch, and its publication nonce is rejected.
 This addresses in-flight HTTP requests that a local lease alone cannot revoke.
 There is no automatic cleanup of abandoned or old versions yet.
 
+The [snapshot reader](snapshot-read-spike.md) and
+[Custom Scan](snapshot-executor-spike.md#replay-failure-and-recovery-coverage) now
+consume this durable protocol state as a conservative search guard: a committed
+pending batch blocks the affected generation until PG publication commits.
+Remote success alone cannot unblock it, and worker death needs no failure callback.
+An active replay is also blocked; unclaimed lag remains subject to the existing
+vector-overlay/BM25 admission checks. This does not add worker scheduling or
+automatic retry, and it does not connect replay to the commit-response probe.
+
 The live harness has exclusive ownership of new temporary collections. The
 installation stamp rejects logical restore to another database; an unfenced
 physical clone and external writers to these Branches remain unsupported.
