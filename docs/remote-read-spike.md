@@ -10,15 +10,14 @@ Both vector and BM25 remain required for the later index/executor milestone.
 
 - Keep C/PGXS and PostgreSQL 18.6 / Debian 12 / arm64. Select libcurl 7.88.1
   (Debian package `7.88.1-10+deb12u15`) plus zlib `1:1.2.13.dfsg-1` for
-  this candidate; production dependency
-  and distribution support remain open.
+  this candidate; production dependency and distribution support remain open.
 - Separate `http.c` (HTTPS transport) from `probe.c` (LambdaDB request/envelope
   handling). No ZomboDB source was copied. Its old C version informed connection
   lifetime, interrupt handling, and error cleanup; its current Rust thread and
   Elasticsearch refresh/scroll designs are not imported.
 - A lazily created multi handle owns a backend-local connection cache capped at
-  two idle API connections. Each API call creates one easy handle and releases it and
-  its headers/body on success or PG ERROR. There are no concurrent requests,
+  two idle API connections. Each API call creates one easy handle and releases
+  it and its headers/body on success or PG ERROR. There are no concurrent requests,
   PG calls from worker threads, transaction callbacks, or commit-phase HTTP.
   Downloads use a separate short-lived multi/easy handle and fresh connection,
   even when the signed URL has the same origin as the API. They inherit no API
@@ -42,8 +41,7 @@ Both vector and BM25 remain required for the later index/executor milestone.
   never raise PostgreSQL errors through curl's stack. Decode gzip explicitly with
   zlib, including objects without Content-Encoding, and validate stream completion
   and CRC. Reject truncated streams, trailing data, concatenated members, and
-  unsupported content encodings. HTTP status/transport errors
-  omit remote URLs, bodies, headers, and keys. JSON parsing uses PG soft errors
+  unsupported content encodings. HTTP status/transport errors omit remote URLs, bodies, headers, and keys. JSON parsing uses PG soft errors
   so malformed response tokens do not appear in diagnostics.
 
 ## Test-only SQL interface
@@ -121,7 +119,8 @@ leave resources; inspect the report's ownership records before recovery.
 
 ## Evidence and limits
 
-The initial PR #6 local TLS suite passed 16 tests covering connection reuse; Tag body/auth;
+The initial PR #6 local TLS suite passed 16 tests covering connection reuse;
+Tag body/auth;
 401/429/500, redirects, disconnects and truncated responses without duplicate
 POSTs; malformed JSON/UTF8/NUL/envelopes with redacted errors; explicit offload
 rejection; gzip and size/expansion limits; total/statement deadlines; explicit
@@ -154,8 +153,20 @@ The evidence preserves that distinction and does not pin a backend deployment
 revision. The existing local vector regression, 33 protocol cases, dump/restore,
 and clean evaluation-bundle installation also passed.
 
-Planner hooks, IAM/CustomScan selection, execution-local BM25 score binding, PG row visibility,
-own writes, ranked continuation, writes/outbox/fencing, and
+The [C download evidence](evidence/c-result-download-2026-09-27.json) records a
+second passed run at 10:03:30–10:06:43 UTC on September 27, from clean source
+commit `a2e3f63`, with probe file hashes verified against the pinned image. It
+rechecked two executions each of the five-hit vector and three-hit BM25 Tags,
+then two C downloads of 100 large BM25 hits. Each download verified all IDs,
+scores, and 8,000,000 payload bytes against the Python reference. `wasOffloaded`
+was true in both large-result executions and false in the small ones. The data
+rows were written in batches of 52 and 48, followed by one marker request.
+The large Tag barrier took 51.938 seconds; all two collections and three Tags
+were cleaned up, with collection absence confirmed. This demonstrates result
+hydration within the fixture, not ranked continuation or general completeness.
+
+Planner hooks, IAM/CustomScan selection, execution-local BM25 score binding,
+PG row visibility, own writes, ranked continuation, writes/outbox/fencing, and
 Tag publication are still unimplemented by this candidate. In particular, a
 prepared SQL function call does not prove index rescan or cached-plan safety.
 
