@@ -130,9 +130,9 @@ savepoint/transaction/deferred-constraint rollback, injected outbox failure,
 committed visibility and late smaller IDs, rebuild/drop retirement, guard failures,
 crash recovery, and logical-restore refusal with backlog preservation.
 
-Next define fenced claiming/replay of committed transaction batches and bind it
-to generation ownership, then connect batched writes, the verified indexed-marker
-barrier, immutable Tags, and atomic PG publication/eligible outbox deletion.
+The follow-on [batch replay experiment](batch-replay-spike.md) now connects frozen
+committed membership, per-attempt Branch isolation, batched writes, a verified
+indexed-marker/Tag barrier, and atomic PG publication/exact outbox deletion.
 No retention/backpressure policy, worker retries, publication coverage, source row
 version/TID mapping, BM25 overlay statistics, or strict-read acceptance is proven
 by these local tests.

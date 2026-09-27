@@ -21,6 +21,9 @@ CREATE EXTENSION pg_onesearch;
 SELECT onesearch.cosine_distance('[1,0]', '[0,1]') AS distance;
 SELECT extname, extversion FROM pg_extension ORDER BY extname;
 DO $$ BEGIN
+    IF to_regnamespace('pgos_replay_probe') IS NOT NULL THEN
+        RAISE EXCEPTION 'replay probe leaked into product installation';
+    END IF;
     IF to_regnamespace('pgos_capture_probe') IS NOT NULL THEN
         RAISE EXCEPTION 'capture probe leaked into product installation';
     END IF;
