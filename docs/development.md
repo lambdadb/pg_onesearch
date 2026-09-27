@@ -62,6 +62,13 @@ cover this bounded behavior with local fixtures. General remote health detection
 automatic retry scheduling, commit-wait, resource cleanup and product integration
 remain open; no LambdaDB core change or changed-corpus BM25 path is introduced.
 
+The [retention increment](retention-spike.md) adds durable, retryable cleanup for
+eligible published attempt refs after the PG snapshot horizon has passed, while
+retaining current bases and possible replay-parent dependencies. It also admits
+published refs of committed retired generations. Abandoned attempts, collection
+deletion, audit compaction and production scheduling remain deferred; local
+fixtures do not establish live service deletion or physical storage reclamation.
+
 ## Confirmed requirements from the handoff
 
 - Extension/repository identifier: `pg_onesearch`; no required pgvector extension.

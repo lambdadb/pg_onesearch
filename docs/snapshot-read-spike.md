@@ -48,9 +48,10 @@ The data view contains:
 
 The source heap and IAM metadata relation locks prevent physical replacement
 during a read but allow ordinary DML and VACUUM. Published payload audit records
-and remote Tags are retained indefinitely by the earlier probe; this experiment
-adds no remote GC. The concurrent test pauses a statement before assembling its
-view, publishes and deletes its outbox in another session, changes the source
+remain retained for base reconstruction. The [retention probe](retention-spike.md)
+can delete older published remote refs only after the PG non-removable snapshot
+horizon and replay-parent checks permit it. The concurrent test pauses a statement
+before assembling its view, publishes and deletes its outbox in another session, changes the source
 again, and VACUUMs source/outbox/target. The old statement still reads its old Tag,
 its now-deleted delta and its old heap version; the next statement selects the new
 Tag and remaining delta. This tests READ COMMITTED statement lifetime, not support
