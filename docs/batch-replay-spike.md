@@ -172,3 +172,9 @@ exact source-transaction membership and observes these committed batch receipts
 across all affected generations before releasing a commit waiter. It preserves
 the existing batching, marker/Tag checks and fencing protocol. The observer is
 not an automatic replay scheduler, and integrated evidence remains offline.
+
+The optional [automatic scheduler](replay-scheduler-spike.md) subsequently adds
+committed-work discovery and durable backoff around the same adapter. Its
+singleton session lock coordinates scheduling, while the existing replay nonce
+continues to fence publication. It is not a product launcher or a change to the
+remote write/readiness contract.

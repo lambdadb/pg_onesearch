@@ -92,6 +92,7 @@ record does not replace or edit that canonical plan.
 - [Proposed vector/BM25 SQL and client contract, with unresolved gates](docs/sql-client-contract.md)
 - [Actual psql/Psycopg completion and warning evidence](docs/client-contract-validation.md)
 - [Commit completion over verified replay publication](docs/publication-commit-spike.md)
+- [Automatic replay discovery and durable retry experiment](docs/replay-scheduler-spike.md)
 - [Live LambdaDB compatibility harness and indexed-write barrier](docs/live-compatibility.md)
 - [C/libcurl read transport candidate and validation scope](docs/remote-read-spike.md)
 - [Vector/BM25 Custom Scan executor experiment](docs/executor-spike.md)
@@ -112,6 +113,8 @@ Run `./scripts/test-client-contract.sh` to exercise the same fixture with psql
 and hash-pinned Psycopg 3.3.6 in a separate test image.
 Run `./scripts/test-publication-commit.sh` to connect the commit wait to exact
 per-transaction replay coverage and verified Tag publication using offline fixtures.
+Run `./scripts/test-replay-scheduler.sh` to add automatic discovery, serial replay,
+and durable retry backoff to that integration fixture.
 
 The public source repository is [lambdadb/pg_onesearch](https://github.com/lambdadb/pg_onesearch).
 Feature PRs target `develop`; `main` is reserved for release-validated

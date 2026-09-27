@@ -78,6 +78,15 @@ ACKs, partial publication, process termination and PG restart. This does not
 adopt the hook for production or add automatic replay scheduling; the Python
 adapter, live integration, supported lifecycle, scale and release gates remain open.
 
+The [automatic replay increment](replay-scheduler-spike.md) adds a single serial
+Python scheduler over that adapter, with database-scoped session ownership,
+committed-work discovery, durable capped retry backoff and restart recovery.
+Offline tests now complete source commits without explicit per-generation replay
+calls. This does not choose the product worker language or add a production
+launcher, automatic PG reconnect, parallelism, retirement completion or live
+service evidence. The earlier increments' limitations describe their standalone
+fixtures; this optional scheduler is an additional integration layer.
+
 ## Confirmed requirements from the handoff
 
 - Extension/repository identifier: `pg_onesearch`; no required pgvector extension.

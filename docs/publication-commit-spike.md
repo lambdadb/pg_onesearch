@@ -123,6 +123,14 @@ The existing 20 commit/worker, 18 client-contract, 13 snapshot-reader,
 19 snapshot-executor and 9 retention scenarios also pass locally. CI runs the
 new suite and retains `publication-commit.log` with its other evidence.
 
+## Subsequent automatic replay integration
+
+The optional [replay scheduler](replay-scheduler-spike.md) now drives the adapter
+from committed-work discovery with durable retry backoff. Its separate tests
+reuse this completion observer and read gate. The 15 scenarios above continue to
+use explicit replay calls to control publication boundaries; production launcher,
+live-service and callback adoption gates remain open.
+
 ## Open gates
 
 - `RESOURCE_RELEASE_AFTER_LOCKS` is still a feasibility candidate, not an
