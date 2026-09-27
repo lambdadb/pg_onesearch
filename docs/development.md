@@ -75,6 +75,12 @@ and host services were not installed or changed.
 
 ## Unresolved decisions and next executable gates
 
+The [C remote read experiment](remote-read-spike.md) selects libcurl for an
+isolated candidate and adds actual SQL-to-LambdaDB Tag queries. Its transport
+and restricted SQL wrapper are separate from the product extension. It does not
+close the planner/executor, strict-read, remote-write, or production credential
+gates below.
+
 | Area | Required next evidence |
 | --- | --- |
 | First E2E milestone | Both remote vector and BM25 indexes, actual index plans, mutation/search reference comparisons, source retention across index lifecycle. BM25 remains in this milestone. |
