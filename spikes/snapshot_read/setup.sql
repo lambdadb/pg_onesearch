@@ -6,6 +6,10 @@ CREATE TABLE pgos_snapshot_probe.health (
     generation uuid PRIMARY KEY REFERENCES pgos_capture_probe.generations,
     healthy boolean NOT NULL
 );
+-- Empty unless the optional transaction completion probe installs its durable
+-- membership view. Own uncommitted writes remain governed by snapshot assembly.
+CREATE VIEW pgos_snapshot_probe.pending_commits AS
+SELECT NULL::uuid AS generation, NULL::xid8 AS writer_xid WHERE false;
 CREATE FUNCTION pgos_snapshot_probe.set_test_health(target regclass, healthy boolean)
 RETURNS void LANGUAGE plpgsql SET search_path=pg_catalog,pg_temp AS $$
 DECLARE gen uuid;

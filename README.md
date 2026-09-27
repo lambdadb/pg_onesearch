@@ -91,6 +91,7 @@ record does not replace or edit that canonical plan.
 - [Commit/worker feasibility experiment and protocol limitations](docs/commit-worker-spike.md)
 - [Proposed vector/BM25 SQL and client contract, with unresolved gates](docs/sql-client-contract.md)
 - [Actual psql/Psycopg completion and warning evidence](docs/client-contract-validation.md)
+- [Commit completion over verified replay publication](docs/publication-commit-spike.md)
 - [Live LambdaDB compatibility harness and indexed-write barrier](docs/live-compatibility.md)
 - [C/libcurl read transport candidate and validation scope](docs/remote-read-spike.md)
 - [Vector/BM25 Custom Scan executor experiment](docs/executor-spike.md)
@@ -109,6 +110,8 @@ is not installed by `CREATE EXTENSION pg_onesearch` or included in its evaluatio
 bundle; the product skeleton still has no outbox or background worker.
 Run `./scripts/test-client-contract.sh` to exercise the same fixture with psql
 and hash-pinned Psycopg 3.3.6 in a separate test image.
+Run `./scripts/test-publication-commit.sh` to connect the commit wait to exact
+per-transaction replay coverage and verified Tag publication using offline fixtures.
 
 The public source repository is [lambdadb/pg_onesearch](https://github.com/lambdadb/pg_onesearch).
 Feature PRs target `develop`; `main` is reserved for release-validated

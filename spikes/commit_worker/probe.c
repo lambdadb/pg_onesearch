@@ -31,6 +31,7 @@ typedef struct Waiter
 {
     int pid;
     uint64 xid;
+    Oid database;
     int phase;                  /* 0 reserved, 1 commit callback, 2 after locks */
     int outcome;                /* 0 pending, 1 published, 2 mock failure */
 } Waiter;
@@ -67,9 +68,12 @@ void _PG_init(void);
 PGDLLEXPORT void onesearch_probe_worker(Datum arg);
 PG_FUNCTION_INFO_V1(onesearch_probe_mark);
 PG_FUNCTION_INFO_V1(onesearch_probe_start);
+PG_FUNCTION_INFO_V1(onesearch_probe_start_publication);
 PG_FUNCTION_INFO_V1(onesearch_probe_control);
 PG_FUNCTION_INFO_V1(onesearch_probe_status);
 PG_FUNCTION_INFO_V1(onesearch_probe_last);
+
+static void publication_iteration(uint32 event);
 
 static void
 request_shared(void)
@@ -172,7 +176,7 @@ wait_for_publication(int phase)
         ereport(WARNING,
                 (errcode(ERRCODE_WARNING),
                  errmsg("pg_onesearch probe: source committed; synchronization incomplete"),
-                 errdetail("xid=" UINT64_FORMAT "; %s; check receipts; unpublished replay retained", xid, reason)));
+                 errdetail("xid=" UINT64_FORMAT "; %s; check durable publication status; unpublished replay retained", xid, reason)));
 }
 
 static void
@@ -194,6 +198,7 @@ xact_event(XactEvent event, void *arg)
                 my_slot = i;
                 shared->waiters[i].pid = MyProcPid;
                 shared->waiters[i].xid = xid;
+                shared->waiters[i].database = MyDatabaseId;
                 break;
             }
         SpinLockRelease(&shared->mutex);
@@ -321,8 +326,8 @@ onesearch_probe_status(PG_FUNCTION_ARGS)
     PG_RETURN_TEXT_P(cstring_to_text(psprintf("%d,%d,%d", pid, stage, count)));
 }
 
-Datum
-onesearch_probe_start(PG_FUNCTION_ARGS)
+static int
+start_worker(bool publication)
 {
     BackgroundWorker worker = {0};
     BackgroundWorkerHandle *handle;
@@ -347,6 +352,7 @@ onesearch_probe_start(PG_FUNCTION_ARGS)
     snprintf(worker.bgw_type, BGW_MAXLEN, "onesearch commit probe");
     worker.bgw_main_arg = ObjectIdGetDatum(MyDatabaseId);
     memcpy(worker.bgw_extra, &role, sizeof(role));
+    memcpy(worker.bgw_extra + sizeof(role), &publication, sizeof(publication));
     worker.bgw_notify_pid = MyProcPid;
     if (!RegisterDynamicBackgroundWorker(&worker, &handle) ||
         WaitForBackgroundWorkerStartup(handle, &pid) != BGWH_STARTED)
@@ -356,7 +362,19 @@ onesearch_probe_start(PG_FUNCTION_ARGS)
         SpinLockRelease(&shared->mutex);
         ereport(ERROR, (errmsg("could not start probe worker")));
     }
-    PG_RETURN_INT32(pid);
+    return pid;
+}
+
+Datum
+onesearch_probe_start(PG_FUNCTION_ARGS)
+{
+    PG_RETURN_INT32(start_worker(false));
+}
+
+Datum
+onesearch_probe_start_publication(PG_FUNCTION_ARGS)
+{
+    PG_RETURN_INT32(start_worker(true));
 }
 
 static int
@@ -391,7 +409,9 @@ onesearch_probe_worker(Datum arg)
 {
     Oid role;
     uint32 event;
+    bool publication;
 
+    memcpy(&publication, MyBgworkerEntry->bgw_extra + sizeof(role), sizeof(publication));
     memcpy(&role, MyBgworkerEntry->bgw_extra, sizeof(role));
     pqsignal(SIGTERM, die);
     BackgroundWorkerUnblockSignals();
@@ -417,6 +437,12 @@ onesearch_probe_worker(Datum arg)
         SpinLockRelease(&shared->mutex);
         if (mode == 1)
             continue;
+        if (publication)
+        {
+            publication_iteration(event);
+            set_worker_stage(0);
+            continue;
+        }
         SetCurrentStatementStartTimestamp();
         StartTransactionCommand();
         SPI_connect();
@@ -461,11 +487,65 @@ onesearch_probe_worker(Datum arg)
             int j;
 
             for (j = 0; j < NSLOTS; j++)
-                if (shared->waiters[j].pid && shared->waiters[j].xid == xids[i])
+                if (shared->waiters[j].pid && shared->waiters[j].database == MyDatabaseId &&
+                    shared->waiters[j].xid == xids[i])
                     shared->waiters[j].outcome = mode == 2 ? 2 : 1;
         }
         SpinLockRelease(&shared->mutex);
         set_worker_stage(0);
         pgstat_report_activity(STATE_IDLE, NULL);
     }
+}
+
+/* Observe committed replay publication outside the writer's cleanup callback.
+ * Poll durable exact membership; adapter notifications are never authority.
+ * The same SQL predicate is available after a timeout or postmaster restart.
+ */
+static void
+publication_iteration(uint32 event)
+{
+    Waiter candidates[NSLOTS];
+    bool ready[NSLOTS] = {false};
+    bool have_ready = false;
+    int i;
+
+    SpinLockAcquire(&shared->mutex);
+    memcpy(candidates, shared->waiters, sizeof(candidates));
+    SpinLockRelease(&shared->mutex);
+    SetCurrentStatementStartTimestamp();
+    StartTransactionCommand();
+    SPI_connect();
+    PushActiveSnapshot(GetTransactionSnapshot());
+    for (i = 0; i < NSLOTS; i++)
+    {
+        char query[256];
+        bool isnull;
+        Datum result;
+
+        if (!candidates[i].pid || candidates[i].database != MyDatabaseId)
+            continue;
+        snprintf(query, sizeof(query),
+                 "SELECT pgos_completion_probe.is_published('" UINT64_FORMAT "'::xid8)",
+                 candidates[i].xid);
+        if (SPI_execute(query, true, 1) != SPI_OK_SELECT || SPI_processed != 1)
+            elog(ERROR, "completion probe expected one status row");
+        result = SPI_getbinval(SPI_tuptable->vals[0], SPI_tuptable->tupdesc, 1, &isnull);
+        ready[i] = !isnull && DatumGetBool(result);
+        have_ready |= ready[i];
+    }
+    SPI_finish();
+    PopActiveSnapshot();
+    CommitTransactionCommand();
+    if (!have_ready)
+        return;
+    set_worker_stage(3);
+    while (worker_mode() == 4)
+        worker_wait(event); /* Fault: die after observation but before notification. */
+    SpinLockAcquire(&shared->mutex);
+    for (i = 0; i < NSLOTS; i++)
+        if (ready[i] && shared->waiters[i].pid == candidates[i].pid &&
+            shared->waiters[i].database == candidates[i].database &&
+            shared->waiters[i].xid == candidates[i].xid)
+            shared->waiters[i].outcome = 1;
+    SpinLockRelease(&shared->mutex);
 }
