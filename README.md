@@ -121,3 +121,11 @@ The source-linked sbrain plan may require organization access; the local
 implementation and validation documents above describe the public skeleton.
 No release tag or stable distribution has been published; license selection
 remains open.
+
+The [accepted stabilization scope](docs/development.md#accepted-stabilization-scope--2026-09-27)
+keeps the probe's BM25 restriction: the statement-visible indexed document map
+must equal the selected Tag's base map. Indexed own writes or committed replay
+lag that change that map reject before HTTP. LambdaDB core changes and temporary
+search/transaction Branches are deferred while synchronization, recovery and
+lifecycle safety are stabilized. This is a restricted development scope, not
+completion of the original transaction-search milestone or a product release.

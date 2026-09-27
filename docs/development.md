@@ -8,6 +8,52 @@ in full and compared with local sbrain `main`; that file had no differences.
 This record covers implementation choices and evidence for the bounded build
 spike requested on September 26. It does not close the first end-to-end milestone.
 
+## Accepted stabilization scope — 2026-09-27
+
+The owner accepted stabilizing the existing restricted search paths before
+revisiting changed-corpus BM25. This decision takes precedence over the earlier
+implementation sequence below; the original full transaction-search milestone
+remains incomplete.
+
+- Admit BM25 only when the complete effective indexed document map under the SQL
+  snapshot equals the selected Tag's base map. Unrelated source-column changes
+  remain eligible, subject to the existing query, health and admission checks.
+- Reject effective indexed changes, including own writes and committed replay
+  lag, with `0A000` before HTTP. Do not return stale results, silently use local
+  BM25, or combine independently scored base/delta top-k results. After replay
+  and verified publication, a read is eligible only if its own snapshot passes
+  the same map comparison; publication does not refresh an existing PG snapshot.
+- Keep the current bounded vector path and the PostgreSQL outbox/replay/verified
+  Tag publication flow. These are experiments, not activated product features.
+- Defer LambdaDB core changes, a request-scoped overlay API, and temporary
+  Branches for source transactions or individual searches. Existing replay
+  attempt Branches remain part of the tested publication protocol.
+- Preserve the overlay experiment as research evidence. Live-corpus statistics,
+  equality with rebuilt-corpus scores, and compatibility with ordinary Tag
+  scores are unresolved alternatives, not newly accepted scoring guarantees.
+
+### Stabilization sequence
+
+1. Validate the restricted BM25 boundary through SQL execution: indexed own
+   writes and committed lag reject before HTTP; unrelated-column changes remain
+   readable; rollback and verified publication restore eligibility when the
+   current statement's document map matches. Include prepared execution/rescans.
+2. Strengthen synchronization failure and recovery evidence: preserve committed
+   PG rows and replay work; block affected-index search; retry without allowing
+   an obsolete worker to publish; restore search only after verified publication
+   and the applicable generation/health checks. Cover worker termination and
+   ambiguous remote acknowledgements at publication boundaries.
+3. Stabilize generation retirement and remote resource retention/cleanup without
+   deleting resources still needed by admitted snapshots or active attempts.
+   Then assess product integration and scalable lookup/continuation within the
+   explicit supported scope.
+
+This ordering is the implementation plan; it does not claim new test coverage or
+completed recovery behavior. Keep local fixture, live-service, CI and release
+evidence separate. Commit-wait/protocol safety, security, scale and release gates
+remain open. Revisit a generic temporary search workspace only after use cases
+beyond pg_onesearch and the cost of existing Branch/Tag workflows justify it.
+
 ## Confirmed requirements from the handoff
 
 - Extension/repository identifier: `pg_onesearch`; no required pgvector extension.
@@ -102,13 +148,14 @@ overlays and same-corpus BM25 reads. The [snapshot-aware Custom Scan](snapshot-e
 now returns typed heap slots with explicit index/column/key binding, same-snapshot
 row identity checks, SQL filtering/sorting/LIMIT, prepared refresh and rescans.
 It still performs bounded full heap/history scans and rejects changed-corpus BM25.
-The [BM25 overlay contract](bm25-overlay-contract.md) is a server proposal, not an
-approved or available API. The [independent Lucene overlay experiment](bm25-overlay-spike.md)
+The [BM25 overlay contract](bm25-overlay-contract.md) is a deferred server proposal,
+not an approved or available API. The [independent Lucene overlay experiment](bm25-overlay-spike.md)
 adds a bounded effective-statistics/oracle proof; it is not server or PG integration.
 Product IAM/Custom Scan activation remains open.
 
 | Area | Required next evidence |
 | --- | --- |
+| Current stabilization scope | The accepted scope above allows same-corpus BM25 only. Validate rejection, synchronization recovery and lifecycle safety without implementing a new LambdaDB overlay API. The broader rows below remain original milestone/product gates, not prerequisites for starting this restricted stabilization work. |
 | First E2E milestone | Both remote vector and BM25 indexes, actual index plans, mutation/search reference comparisons, source retention across index lifecycle. BM25 remains in this milestone. |
 | BM25 SQL | [Concrete SQL proposal](sql-client-contract.md) specifies match/score binding and bounded query shapes. The [snapshot Custom Scan proof](snapshot-executor-spike.md) binds scores to a registered probe index, source alias/key and execution state; product API, analyzer fixtures, and coherent corpus/overlay statistics remain open. |
 | Commit response | The separate probe validates an AFTER_LOCKS candidate for specific PG18.6 schedules, including cancellation. Execute+Flush can deliver CommandComplete before commit; [18 actual-client scenarios](client-contract-validation.md) distinguish execute/commit, warnings, cancellation, and prior transaction errors. Audit cleanup-phase safety and enforce protocol scope before adopting the candidate. See [evidence](commit-worker-spike.md). |

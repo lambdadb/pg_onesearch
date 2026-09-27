@@ -6,6 +6,11 @@ a PostgreSQL implementation, or a new supported search mode. No private LambdaDB
 code is included. The PG extension remains C/PGXS; Java is used only here to test
 Lucene behavior directly. Changed-corpus BM25 in the PG probes still rejects.
 
+Under the [accepted stabilization scope](development.md#accepted-stabilization-scope--2026-09-27),
+this experiment remains research evidence. Server integration is deferred while
+the existing restricted paths are stabilized; the oracle does not select a new
+LambdaDB scoring policy.
+
 ## Question and explicit scope
 
 Can immutable base readers plus private replacements/deletes produce the same

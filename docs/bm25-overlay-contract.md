@@ -1,8 +1,15 @@
 # BM25 request-scoped overlay: requirements and proposed contract
 
-**Status: proposal only.** No server endpoint, request fields, implementation,
+**Status: deferred proposal.** No server endpoint, request fields, implementation,
 or delivery commitment is approved by this document. The extension probe still
 rejects a changed indexed corpus before making a BM25 HTTP request.
+
+The owner-approved [stabilization scope](development.md#accepted-stabilization-scope--2026-09-27)
+retains that rejection and defers LambdaDB core changes and temporary search
+Branches. This document preserves a candidate for future review, not the next
+implementation task. Its rebuilt-corpus scoring oracle is an experimental choice;
+document visibility and scoring-statistics policy must be reviewed separately
+before a generic server feature is selected. No scoring alternative is approved.
 
 ## Confirmed requirements
 

@@ -108,11 +108,16 @@ analyzer / `skipSyntax=true` path and reject empty text.
 
 This does not satisfy the required first-E2E BM25 own-write contract yet. Local
 matching, rescoring only returned base hits, or merging separately scored delta
-hits cannot prove one coherent corpus or candidate coverage. The next BM25 gate
-is a concrete request-scoped overlay/scoring contract: pinned base plus explicit
+hits cannot prove one coherent corpus or candidate coverage. The proposed future
+BM25 gate is a request-scoped overlay/scoring contract: pinned base plus explicit
 replacements/deletes, common corpus/term statistics, and adequate candidate
 coverage/continuation. No new LambdaDB endpoint or approved server implementation
 is assumed here.
+
+The [accepted stabilization scope](development.md#accepted-stabilization-scope--2026-09-27)
+defers that server proposal and retains the rejection above. Synchronization,
+recovery and lifecycle stabilization proceed within the restricted read scope;
+the full BM25 own-write milestone remains incomplete.
 
 ## Reproduce and review
 
