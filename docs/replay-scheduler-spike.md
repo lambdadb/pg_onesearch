@@ -150,3 +150,11 @@ Implementation: [scheduler](../spikes/replay_scheduler/scheduler.py),
 [durable scheduling SQL](../spikes/replay_scheduler/setup.sql),
 [tests](../spikes/replay_scheduler/test.py),
 [runner](../scripts/test-replay-scheduler.sh).
+
+## Opt-in live integration
+
+The [live scheduler harness](live-scheduler-validation.md) adds real LambdaDB
+writes/Tags and SQL verification to this automatic loop, reusing the shared
+credential and owned-resource cleanup boundary. The same scenario runs against
+local fixtures in CI. Consult its evidence section for measured live outcomes;
+CI alone remains offline proof.
