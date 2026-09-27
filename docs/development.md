@@ -87,6 +87,14 @@ launcher, automatic PG reconnect, parallelism, retirement completion or live
 service evidence. The earlier increments' limitations describe their standalone
 fixtures; this optional scheduler is an additional integration layer.
 
+The [live automatic replay run](live-scheduler-validation.md) subsequently
+verified real LambdaDB publication, exact two-index recovery, SQL vector/BM25
+results and owned-fixture cleanup. Its normal mutation returned a warning after
+10.003 seconds and finished publication at 120.347 seconds. Thus a functioning
+remote service still exceeded the probe's current wait cap: live no-warning
+commit completion is unproven. Wait/completion policy and production hook
+adoption remain explicit gates; the accepted requirement is not relaxed.
+
 ## Confirmed requirements from the handoff
 
 - Extension/repository identifier: `pg_onesearch`; no required pgvector extension.

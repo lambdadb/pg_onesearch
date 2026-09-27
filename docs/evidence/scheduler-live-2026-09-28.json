@@ -1,0 +1,990 @@
+{
+  "run_id": "e36afe03e5e9417a9c7a7918a7e103cd",
+  "started_at": "2026-09-27T16:40:30.822861+00:00",
+  "status": "passed",
+  "source_revision": "9cc681a8373fdc0ea4fca955a4962ce123fd754f",
+  "worktree_dirty": false,
+  "image_id": "sha256:1cc3712cdfed0a8b85730308bb9b2c378466cd4067379aaec8c02e7250a6c36e",
+  "files_sha256": {
+    "spikes/remote_read/Dockerfile": "fc9626213234a7a2418f0aa68e9b729850f3d76c9fa28526de174badb55d2233",
+    "spikes/remote_read/Makefile": "d25a7cc2d8a9887be802d4cb4e69f21819b2291c45ec94d37ea744ae984094c7",
+    "spikes/remote_read/bootstrap.py": "2124de7bad4fa5a41fc19a5961ffeb4e4eccc623e42ff519c0ecd0e6432cb39f",
+    "spikes/remote_read/http.c": "9b7c9de979695137ca0637919510306e89e552a3c0c20ad676099f747731e16b",
+    "spikes/remote_read/http.h": "5f3ffd58516c882cfeb7e6d5dfdaf915934e839be519f14a154a501f42818a5e",
+    "spikes/remote_read/live.py": "c08e456b075da90fbd97515359649f782e540d9bba5e853eceba4c760836cfd4",
+    "spikes/remote_read/offline.py": "a293c843ff39a429ff8e1f73b47fefdfdbec5c62700b829bb5eeb75e219784c4",
+    "spikes/remote_read/probe.c": "4bfab1da3b83753757a8112eed0298cdfc441c6e2f1600ab653192db190cbc1b",
+    "spikes/remote_read/run.sh": "cdff31eb587037670f4f3605f7d726a019b76336a388ed55d5beb69efd2a4a90",
+    "spikes/remote_read/run_live.py": "42344c02b413ddcfa5098a516ee79538e9140eea8666a4291506d360f0d778e6",
+    "spikes/remote_read/setup.sql": "e1ceffdd8d18552f4d63dd733a010de372d2b6d3e1efe72f346a5be4b5589988",
+    "spikes/index_lifecycle/Dockerfile": "d091460eda7747a584bf4f2e41086c384ad888f1b5700048af8c7912478f9016",
+    "spikes/index_lifecycle/Makefile": "a9ae16194fcb194171982a197cbd3a7396b0f8cd20d6efa07a79e77bd804e730",
+    "spikes/index_lifecycle/lifecycle.c": "b566179cbdb6152494d879eaa24c66b3225605974d4fd01557c10596b05bc927",
+    "spikes/index_lifecycle/run.sh": "90152f4fa9f6748e3c7e85c5e04f4e6dbcfc930675cc58c8e5b9393bf8e22c35",
+    "spikes/index_lifecycle/setup.sql": "9d016efa91cc08b06e767740e22da09cfdfed69598219277048ffd1ee7e77c48",
+    "spikes/index_lifecycle/test.py": "8c8d0b01b092258756dedff87c8bf4b018b2012cc8e2a3be1fd9fa7fe42bb88b",
+    "spikes/change_capture/Dockerfile": "d802a7a67fed4e90439c3383b5b5b1839ac87cab90f11c9a3491ce32c124b809",
+    "spikes/change_capture/run.sh": "2eeacd4307fbb5acbd90fd3bbd2b34d70858b3ec809f5af7d2a625f882c3112b",
+    "spikes/change_capture/setup.sql": "e129b571cdad82ea934863a51a89224eac951624c217f767b785e19bfcb0b395",
+    "spikes/change_capture/test.py": "c57e416a1825dd0421a0b982f767ed46c936b75bca2322b3a4d398c65e51354e",
+    "spikes/batch_replay/Dockerfile": "0ee8190df81feb64e08dc9d61fc31d01d3199b902f8cd9943ef3c80575aa2b1b",
+    "spikes/batch_replay/bootstrap.py": "effea427458ba661e6d2d26b47604646f2fe66ddbc9e3e2f09a2c8a5c0a4fef8",
+    "spikes/batch_replay/cleanup.py": "52fe38a5ba11741ac53d932655848f4459b34f4de31afaf90b62c75d266b2438",
+    "spikes/batch_replay/live.py": "35de319af141ff7a4505707085e95b3d04b93158c1d2bf82cbf4946434eddaf1",
+    "spikes/batch_replay/retention.sql": "b5191e4c47c21fbc7ec5aa4954162a309371390a65d294acc99a2d1f3fd2818c",
+    "spikes/batch_replay/run.sh": "a8cc270db69a9fa1269d5c5da328e14e32e2231695be843986c5f1bf9a2c4e80",
+    "spikes/batch_replay/run_live.py": "1337253647ec3dc98a31f06710a502f8af0faefd15056ee5a89a2b7465381d55",
+    "spikes/batch_replay/setup.sql": "6348f5f99cf2511fcc43e6155cc16dad2cede0838ae97cb53f355c22bb8ce770",
+    "spikes/batch_replay/test.py": "ab7995cc4e9d404bf855835ef9614b9f786e97e234fc38aeef8f98f2778debc2",
+    "spikes/batch_replay/worker.py": "6cfd2554e52b884ac35b0910789e83a866ae352c4a581d270d35f47d9684289c",
+    "spikes/live_compatibility/client.py": "c6d2c25a2ac77d6b39faf6860ed9a1abc69b0852888197cb5ff859504e7bfb83",
+    "spikes/live_compatibility/run.py": "c734a81bf9ae5f475c0453b9cd52c21f564e960b74a47499f1a1c48ccbf1804f",
+    "spikes/live_compatibility/test_offline.py": "6a0f87175a881946c336e8e94e984050bd1a2167b980ad702f02168de6920bb2",
+    "spikes/snapshot_read/Dockerfile": "9b2f06a47ab616937debeb9d45659dd672f42d1c898c8ed5d6296c1342fc36e2",
+    "spikes/snapshot_read/Makefile": "db7d7bcde7e04dcfd2b2823c8f3343cca4d1652780c43948d245d1bf5fe8c6d1",
+    "spikes/snapshot_read/bootstrap.py": "f3b90494026a5dde18d2b907d7ecb8e1a615fc6d5e3fd6d21fc21adff983e8ac",
+    "spikes/snapshot_read/live.py": "10d9992e65fecebeb6dbe258e59fc39d0b413f64f349b156569c7598719a6fbd",
+    "spikes/snapshot_read/offline.py": "1bcbc9e412dde265255e9ab9016aac9f388d3766cde135395d77308be9d3dde4",
+    "spikes/snapshot_read/run.sh": "fb1de08854042e64cf5c0986c3ab602037691dc843f6bc664e405edd575f3d42",
+    "spikes/snapshot_read/run_live.py": "9c8561c4e92a0190f9e7425edb5f6496e5b5f6b819c9af3c97fdc1a5ee005b68",
+    "spikes/snapshot_read/setup.sql": "ff44e964dc7afed8d15866414bf735f4d19462cca4b2478ae7fd42873b66a729",
+    "spikes/snapshot_read/snapshot.c": "08e2b294c855c610905c44d31204a3e34ce6bb48f35dac44429df7d3fbc4ddea",
+    "spikes/snapshot_read/test_cleanup.py": "dc9486aae5c8ec2dab2e953a82221a14bd047169e0755997f15e231ab2928a33",
+    "spikes/snapshot_executor/Dockerfile": "bf4c21f17527fe70b11df3c9b1a3e41ec31201edfd41ae879c205277b80ba6ac",
+    "spikes/snapshot_executor/Makefile": "ba5097105d8d275791adebea0f31e6dd881a7bf1927b9e99e42cb498898f3b5b",
+    "spikes/snapshot_executor/bootstrap.py": "64892463eb50141fef56c5148e4fdf7bb268a8f53564b83d702e531246159fef",
+    "spikes/snapshot_executor/executor.c": "87e03b172c3b0122f584d5ef215176988a4e1887a00abeda3d939cca9f7a62e3",
+    "spikes/snapshot_executor/live.py": "b0a7f8f8d35c3c25edf6d6591cdec7972ab2c307a938f014a5190787496ad933",
+    "spikes/snapshot_executor/offline.py": "7c35a031b27d81b8a05e2f06337bb95be79d3dc2532f7a28075e97bea220d236",
+    "spikes/snapshot_executor/retention.py": "788378f48c49dd43403013b0b577a0e93f79d3fb17f1c8372a6cec44609e1870",
+    "spikes/snapshot_executor/run.sh": "c4ca9f7b97cabf9e008412affd64c03401319387812ec03792e820d764b1f6b0",
+    "spikes/snapshot_executor/run_live.py": "48c7a692e8c7a6b0d379f1381701a8d399111bd2165a634c8afc752806ca92a2",
+    "spikes/snapshot_executor/setup.sql": "611e9dd4cf0bb2c1f4acaff93eed553659705b794d2e6d152857e66993eec248",
+    "spikes/commit_worker/Makefile": "29996614c88ba3e8e7a0bb41928d4c552bef07d21fd309d238e994fa4d675b59",
+    "spikes/commit_worker/probe.c": "b39b44eff41ca1fa133c0dd0f629a511f36a1528e1ddacd118cab385791db54f",
+    "spikes/commit_worker/run.sh": "f65283a1c4daa7095db297ac3e9c88194a90f3b30a7168f3c6a3b795bd235754",
+    "spikes/commit_worker/setup.sql": "2b30118080dffc124637408297683c1f8aada9350db922050c0b2bd51c69874e",
+    "spikes/commit_worker/test.py": "098d3cd68f6ff96c39db074295d628711d5cc4e7e7230e58e634b7c67bc4ef82",
+    "spikes/publication_commit/Dockerfile": "ff6150084c95e13a10470cf3107c8224e90f9fdde9a5d291b701eb667a906ee0",
+    "spikes/publication_commit/run.sh": "1422512633325a5a0f14c88055b401854a7c9b4e7e7e78651a48dcc0fbd7eed0",
+    "spikes/publication_commit/setup.sql": "786b0656e135371bf7c6f406e8e6cb5a30ed9fd2eb72be6c46c748729ee22017",
+    "spikes/publication_commit/test.py": "6dea0524b6a4446a14b2dccc06dc9c78f2a4822a6b0896e48eb5ddbbed81a61e",
+    "spikes/replay_scheduler/Dockerfile": "b97a7f9d59a9f76fa9542212385343773856ba3f0e34573771f7f452920bb3c5",
+    "spikes/replay_scheduler/bootstrap.py": "bd87b64259f7019630a69960ba48d0fb3bdd3374e3bf5c050a4808a7cd559de4",
+    "spikes/replay_scheduler/live.py": "f0f392ecb94040f7d2bd206fd75ec0ac7ec07b0af8069e94681292637eeb7c2b",
+    "spikes/replay_scheduler/live_fixture.py": "62e8b88e7c189329ababfe9998b196c2815eb51bd9bef79f31f0f0c8d03c45d7",
+    "spikes/replay_scheduler/run.sh": "e42bf1255bbebd27efbe3311e37644138c584ce3676852d3c908c1f2edd00e63",
+    "spikes/replay_scheduler/run_live.py": "d071a0d98e8718bd0c8808df2c5c4a9d7c29fe18202b2ccbfaf3a4eecc996919",
+    "spikes/replay_scheduler/scheduler.py": "dfc95770d45fa4fe10501339bcfb91c3777b1a193dcf47ec6fc8e30af9fa4c2f",
+    "spikes/replay_scheduler/setup.sql": "1d09fdc948f980d1f8f19909a25dd49df4f81669ea781555d54613ca8d29bd2d",
+    "spikes/replay_scheduler/test.py": "8c67cbd98ad43c6d3d535c74c219977770ba94e6fd5fae67e67cd5cc30ab5a2d"
+  },
+  "checks": [
+    {
+      "name": "vector: create independent collection"
+    },
+    {
+      "name": "bm25: create independent collection"
+    }
+  ],
+  "writes": [],
+  "resources": [
+    {
+      "name": "pgos-live-e36afe03e5e9417a9c7a-vector",
+      "role": "vector",
+      "tags": [
+        "attempt-039ca9f2d1984f399fb1794c0e54a993",
+        "attempt-2f3b2fbdc9fb41b787d764aea822da45",
+        "attempt-499fffea476d4bfbb6004639a22ccb54"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true,
+      "branches": [
+        "attempt-039ca9f2d1984f399fb1794c0e54a993",
+        "attempt-2f3b2fbdc9fb41b787d764aea822da45",
+        "attempt-499fffea476d4bfbb6004639a22ccb54",
+        "attempt-9fa89d3f7eaf4b49b33fa5972c7da595"
+      ]
+    },
+    {
+      "name": "pgos-live-e36afe03e5e9417a9c7a-bm25",
+      "role": "bm25",
+      "tags": [
+        "attempt-23fc4ae014e8406b9136a7a5adc42b9a",
+        "attempt-aaf1bafc44b74d3dbd486384e3ff70c2",
+        "attempt-f2c2edbddf1e4011a1b28b8acc5aa96d"
+      ],
+      "cleanup": "confirmed_absent",
+      "created": true,
+      "branches": [
+        "attempt-23fc4ae014e8406b9136a7a5adc42b9a",
+        "attempt-aaf1bafc44b74d3dbd486384e3ff70c2",
+        "attempt-f2c2edbddf1e4011a1b28b8acc5aa96d"
+      ]
+    }
+  ],
+  "container_name": "pgos-snapshot-e36afe03e5e9417a",
+  "replay_scheduler": {
+    "status": "passed",
+    "checks": [
+      {
+        "name": "automatic-bootstrap",
+        "publication_seconds": 133.697
+      },
+      {
+        "name": "own vector overlay and changed-corpus BM25 restriction"
+      },
+      {
+        "name": "automatic-commit-publication",
+        "publication_seconds": 120.347
+      },
+      {
+        "name": "paused scheduler warning preserves source/outbox and blocks both indexes"
+      },
+      {
+        "name": "restart-and-lost-ack-recovery",
+        "publication_seconds": 119.32
+      },
+      {
+        "name": "fresh fenced attempt after locally discarded live ACK",
+        "attempts": 2
+      }
+    ],
+    "events": [
+      {
+        "role": "vector",
+        "phase": "scheduled",
+        "at_seconds": 0.041
+      },
+      {
+        "role": "vector",
+        "phase": "claimed",
+        "at_seconds": 0.043
+      },
+      {
+        "role": "vector",
+        "phase": "attempt_committed",
+        "at_seconds": 0.043,
+        "attempt": "499fffea-476d-4bfb-b600-4639a22ccb54"
+      },
+      {
+        "role": "vector",
+        "phase": "tag_verified",
+        "at_seconds": 71.782
+      },
+      {
+        "role": "vector",
+        "phase": "published",
+        "at_seconds": 71.786
+      },
+      {
+        "role": "bm25",
+        "phase": "scheduled",
+        "at_seconds": 71.84
+      },
+      {
+        "role": "bm25",
+        "phase": "claimed",
+        "at_seconds": 71.842
+      },
+      {
+        "role": "bm25",
+        "phase": "attempt_committed",
+        "at_seconds": 71.843,
+        "attempt": "23fc4ae0-14e8-406b-9136-a7a5adc42b9a"
+      },
+      {
+        "role": "bm25",
+        "phase": "tag_verified",
+        "at_seconds": 133.622
+      },
+      {
+        "role": "bm25",
+        "phase": "published",
+        "at_seconds": 133.625
+      },
+      {
+        "role": "vector",
+        "phase": "scheduled",
+        "at_seconds": 134.05
+      },
+      {
+        "role": "vector",
+        "phase": "claimed",
+        "at_seconds": 134.051
+      },
+      {
+        "role": "vector",
+        "phase": "attempt_committed",
+        "at_seconds": 134.051,
+        "attempt": "2f3b2fbd-c9fb-41b7-87d7-64aea822da45"
+      },
+      {
+        "role": "vector",
+        "phase": "tag_verified",
+        "at_seconds": 199.308
+      },
+      {
+        "role": "vector",
+        "phase": "published",
+        "at_seconds": 199.31
+      },
+      {
+        "role": "bm25",
+        "phase": "scheduled",
+        "at_seconds": 199.372
+      },
+      {
+        "role": "bm25",
+        "phase": "claimed",
+        "at_seconds": 199.373
+      },
+      {
+        "role": "bm25",
+        "phase": "attempt_committed",
+        "at_seconds": 199.374,
+        "attempt": "f2c2edbd-df1e-4011-a1b2-8b8acc5aa96d"
+      },
+      {
+        "role": "bm25",
+        "phase": "tag_verified",
+        "at_seconds": 254.288
+      },
+      {
+        "role": "bm25",
+        "phase": "published",
+        "at_seconds": 254.29
+      },
+      {
+        "role": "vector",
+        "phase": "scheduled",
+        "at_seconds": 254.872
+      },
+      {
+        "role": "vector",
+        "phase": "claimed",
+        "at_seconds": 254.875
+      },
+      {
+        "role": "vector",
+        "phase": "attempt_committed",
+        "at_seconds": 254.876,
+        "attempt": "9fa89d3f-7eaf-4b49-b33f-a5972c7da595"
+      },
+      {
+        "role": "bm25",
+        "phase": "scheduled",
+        "at_seconds": 255.279
+      },
+      {
+        "role": "bm25",
+        "phase": "claimed",
+        "at_seconds": 255.282
+      },
+      {
+        "role": "bm25",
+        "phase": "attempt_committed",
+        "at_seconds": 255.283,
+        "attempt": "aaf1bafc-44b7-4d3d-bd48-6384e3ff70c2"
+      },
+      {
+        "role": "bm25",
+        "phase": "tag_verified",
+        "at_seconds": 314.459
+      },
+      {
+        "role": "bm25",
+        "phase": "published",
+        "at_seconds": 314.464
+      },
+      {
+        "role": "vector",
+        "phase": "scheduled",
+        "at_seconds": 314.526
+      },
+      {
+        "role": "vector",
+        "phase": "claimed",
+        "at_seconds": 314.527
+      },
+      {
+        "role": "vector",
+        "phase": "attempt_committed",
+        "at_seconds": 314.528,
+        "attempt": "039ca9f2-d198-4f39-9fb1-794c0e54a993"
+      },
+      {
+        "role": "vector",
+        "phase": "tag_verified",
+        "at_seconds": 373.857
+      },
+      {
+        "role": "vector",
+        "phase": "published",
+        "at_seconds": 373.859
+      }
+    ],
+    "commits": [
+      {
+        "phase": "automatic",
+        "writer_xid": "879",
+        "wait_ms": 10000,
+        "response_seconds": 10.003,
+        "notices": [
+          "01000"
+        ],
+        "callback": "xid=879 phase=2 outcome=timeout holdoff=1 elapsed_ms=10002",
+        "published_at_status_check_after_response": false
+      },
+      {
+        "phase": "paused",
+        "writer_xid": "890",
+        "wait_ms": 250,
+        "response_seconds": 0.252,
+        "notices": [
+          "01000"
+        ],
+        "callback": "xid=890 phase=2 outcome=timeout holdoff=1 elapsed_ms=251",
+        "published_at_status_check_after_response": false
+      }
+    ],
+    "reads": [
+      {
+        "phase": "initial",
+        "role": "vector",
+        "tag": "attempt-499fffea476d4bfbb6004639a22ccb54",
+        "batch": "2fb19756-a7b2-4dc8-8081-c18307a4f812",
+        "rows": [
+          [
+            1,
+            "a",
+            0.0
+          ],
+          [
+            2,
+            "b",
+            1.0
+          ]
+        ]
+      },
+      {
+        "phase": "initial",
+        "role": "bm25",
+        "tag": "attempt-23fc4ae014e8406b9136a7a5adc42b9a",
+        "batch": "7b4fb12f-4069-4040-95de-3f69d32cf00a",
+        "rows": [
+          [
+            1,
+            "a",
+            0.31506687
+          ]
+        ]
+      },
+      {
+        "phase": "automatic",
+        "role": "vector",
+        "tag": "attempt-2f3b2fbdc9fb41b787d764aea822da45",
+        "batch": "8926e902-06e0-4093-aabb-ead25a11e38a",
+        "rows": [
+          [
+            1,
+            "automatic",
+            1.0
+          ],
+          [
+            2,
+            "automatic",
+            1.0
+          ]
+        ]
+      },
+      {
+        "phase": "automatic",
+        "role": "bm25",
+        "tag": "attempt-f2c2edbddf1e4011a1b28b8acc5aa96d",
+        "batch": "454426a4-f486-4e1f-89cb-56293af57905",
+        "rows": [
+          [
+            1,
+            "automatic",
+            0.113950975
+          ],
+          [
+            2,
+            "automatic",
+            0.082873434
+          ]
+        ]
+      },
+      {
+        "phase": "recovered",
+        "role": "vector",
+        "tag": "attempt-039ca9f2d1984f399fb1794c0e54a993",
+        "batch": "23c61cdc-1dbc-4065-bc6e-d3d70b1c1d52",
+        "rows": [
+          [
+            1,
+            "recovered",
+            2.0
+          ],
+          [
+            2,
+            "recovered",
+            2.0
+          ]
+        ]
+      },
+      {
+        "phase": "recovered",
+        "role": "bm25",
+        "tag": "attempt-aaf1bafc44b74d3dbd486384e3ff70c2",
+        "batch": "070d224e-cd4a-4b8d-abcd-bc9c32b045cd",
+        "rows": [
+          [
+            1,
+            "recovered",
+            0.082873434
+          ],
+          [
+            2,
+            "recovered",
+            0.082873434
+          ]
+        ]
+      }
+    ],
+    "plans": [
+      {
+        "phase": "initial",
+        "role": "vector",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 32.587,
+          "Actual Total Time": 32.587,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(onesearch.cosine_distance(embedding, '[1,0,0]'::onesearch.vector))",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 155,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 29.381,
+              "Actual Total Time": 32.584,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "Vector",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-499fffea476d4bfbb6004639a22ccb54",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 155,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "initial",
+        "role": "bm25",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 30.759,
+          "Actual Total Time": 30.759,
+          "Actual Rows": 1.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(pgos_snapshot_executor.score('txt'::regclass, id)) DESC",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 142,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 29.289,
+              "Actual Total Time": 30.757,
+              "Actual Rows": 1.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "BM25",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-23fc4ae014e8406b9136a7a5adc42b9a",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 142,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "automatic",
+        "role": "vector",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 32.088,
+          "Actual Total Time": 32.089,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(onesearch.cosine_distance(embedding, '[1,0,0]'::onesearch.vector))",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 156,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 29.117,
+              "Actual Total Time": 32.086,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "Vector",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-2f3b2fbdc9fb41b787d764aea822da45",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 156,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "automatic",
+        "role": "bm25",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 31.091,
+          "Actual Total Time": 31.091,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(pgos_snapshot_executor.score('txt'::regclass, id)) DESC",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 182,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 27.662,
+              "Actual Total Time": 31.089,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "BM25",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-f2c2edbddf1e4011a1b28b8acc5aa96d",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 182,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "recovered",
+        "role": "vector",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 32.678,
+          "Actual Total Time": 32.678,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(onesearch.cosine_distance(embedding, '[1,0,0]'::onesearch.vector))",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 157,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 29.875,
+              "Actual Total Time": 32.676,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "Vector",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-039ca9f2d1984f399fb1794c0e54a993",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 157,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      },
+      {
+        "phase": "recovered",
+        "role": "bm25",
+        "plan": {
+          "Node Type": "Sort",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 22.08,
+          "Total Cost": 22.24,
+          "Plan Rows": 64,
+          "Plan Width": 48,
+          "Actual Startup Time": 35.347,
+          "Actual Total Time": 35.348,
+          "Actual Rows": 2.0,
+          "Actual Loops": 1,
+          "Disabled": false,
+          "Sort Key": [
+            "(pgos_snapshot_executor.score('txt'::regclass, id)) DESC",
+            "id"
+          ],
+          "Sort Method": "quicksort",
+          "Sort Space Used": 25,
+          "Sort Space Type": "Memory",
+          "Shared Hit Blocks": 183,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Custom Scan",
+              "Parent Relationship": "Outer",
+              "Custom Plan Provider": "OneSearchSnapshot",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "docs",
+              "Alias": "docs",
+              "Startup Cost": 10.0,
+              "Total Cost": 20.16,
+              "Plan Rows": 64,
+              "Plan Width": 48,
+              "Actual Startup Time": 31.82,
+              "Actual Total Time": 35.345,
+              "Actual Rows": 2.0,
+              "Actual Loops": 1,
+              "Disabled": false,
+              "Mode": "BM25",
+              "Scope": "64-row statement snapshot with complete vector delta",
+              "Snapshot Tag": "attempt-aaf1bafc44b74d3dbd486384e3ff70c2",
+              "Remote Queries": 1,
+              "Rescans": 0,
+              "Shared Hit Blocks": 183,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        }
+      }
+    ],
+    "writes": [
+      {
+        "attempt": "499fffea-476d-4bfb-b600-4639a22ccb54",
+        "operation": "upsert",
+        "size": 2
+      },
+      {
+        "attempt": "23fc4ae0-14e8-406b-9136-a7a5adc42b9a",
+        "operation": "upsert",
+        "size": 2
+      },
+      {
+        "attempt": "2f3b2fbd-c9fb-41b7-87d7-64aea822da45",
+        "operation": "upsert",
+        "size": 2
+      },
+      {
+        "attempt": "f2c2edbd-df1e-4011-a1b2-8b8acc5aa96d",
+        "operation": "upsert",
+        "size": 2
+      },
+      {
+        "attempt": "aaf1bafc-44b7-4d3d-bd48-6384e3ff70c2",
+        "operation": "upsert",
+        "size": 2
+      },
+      {
+        "attempt": "039ca9f2-d198-4f39-9fb1-794c0e54a993",
+        "operation": "upsert",
+        "size": 2
+      }
+    ],
+    "barriers": [
+      {
+        "attempt": "499fffea-476d-4bfb-b600-4639a22ccb54",
+        "parent_snapshot": null,
+        "snapshot_id": "425081dd-a64b-42ad-8388-8862b032cc07",
+        "polls": 34,
+        "elapsed_seconds": 69.724
+      },
+      {
+        "attempt": "23fc4ae0-14e8-406b-9136-a7a5adc42b9a",
+        "parent_snapshot": null,
+        "snapshot_id": "efc53137-7a6f-40e9-94af-b896e4460b8a",
+        "polls": 30,
+        "elapsed_seconds": 61.234
+      },
+      {
+        "attempt": "2f3b2fbd-c9fb-41b7-87d7-64aea822da45",
+        "parent_snapshot": {
+          "snapshotId": "425081dd-a64b-42ad-8388-8862b032cc07",
+          "snapshotCommittedAt": 1790527302738
+        },
+        "snapshot_id": "edf46439-1c72-4249-b241-bddd95741a6c",
+        "polls": 32,
+        "elapsed_seconds": 64.754
+      },
+      {
+        "attempt": "f2c2edbd-df1e-4011-a1b2-8b8acc5aa96d",
+        "parent_snapshot": {
+          "snapshotId": "efc53137-7a6f-40e9-94af-b896e4460b8a",
+          "snapshotCommittedAt": 1790527363098
+        },
+        "snapshot_id": "f4075976-c183-4883-9424-081a5733ba29",
+        "polls": 27,
+        "elapsed_seconds": 54.387
+      },
+      {
+        "attempt": "aaf1bafc-44b7-4d3d-bd48-6384e3ff70c2",
+        "parent_snapshot": {
+          "snapshotId": "f4075976-c183-4883-9424-081a5733ba29",
+          "snapshotCommittedAt": 1790527484204
+        },
+        "snapshot_id": "3408c0ac-f088-4772-8688-9dfced882d6f",
+        "polls": 29,
+        "elapsed_seconds": 58.592
+      },
+      {
+        "attempt": "039ca9f2-d198-4f39-9fb1-794c0e54a993",
+        "parent_snapshot": {
+          "snapshotId": "edf46439-1c72-4249-b241-bddd95741a6c",
+          "snapshotCommittedAt": 1790527428512
+        },
+        "snapshot_id": "1e8dc80b-cd74-4a11-abd0-9188ab6e6985",
+        "polls": 29,
+        "elapsed_seconds": 58.792
+      }
+    ],
+    "faults": [
+      {
+        "kind": "locally_discarded_live_upsert_ack",
+        "expected_status": 202
+      }
+    ],
+    "coverage": [
+      {
+        "generation": "0c0f7234-7bf2-4998-acb7-fceae877cb9a",
+        "required_events": 2,
+        "published_events": 2
+      },
+      {
+        "generation": "cad34564-f233-4a45-bdbc-b32052cb45c3",
+        "required_events": 2,
+        "published_events": 2
+      }
+    ],
+    "last_stage": "lost_ack_recovery",
+    "elapsed_seconds": 374.161
+  },
+  "container_remove_returncode": 0,
+  "container_cleanup": "confirmed_absent",
+  "finished_at": "2026-09-27T16:46:48.647512+00:00"
+}

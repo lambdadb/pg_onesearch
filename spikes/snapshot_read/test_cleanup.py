@@ -65,7 +65,7 @@ class CleanupTests(unittest.TestCase):
                     self.assertEqual(absent, expected)
                     self.assertEqual(report['container_remove_error'], type(failure).__name__)
 
-    def run_harness(self, worker, removal, listing, *, executor=False):
+    def run_harness(self, worker, removal, listing, *, executor=False, scheduler=False):
         events, deleted = [], set()
         client = Mock()
         def request(method, path, *args, **kwargs):
@@ -112,7 +112,7 @@ class CleanupTests(unittest.TestCase):
             stack.enter_context(patch.object(harness.subprocess, 'run', side_effect=run))
             stack.enter_context(patch.object(harness.Experiment, 'create', create))
             stack.enter_context(redirect_stdout(io.StringIO()))
-            code = harness.main(executor=executor)
+            code = harness.main(executor=executor, scheduler=scheduler)
             saved = json.loads(report.read_text())
             self.assertNotIn(SENTINEL, report.read_text())
             self.assertNotIn('credential', report.read_text())
@@ -158,6 +158,20 @@ class CleanupTests(unittest.TestCase):
                     worker, result(1), result(output='' if absent else CONTAINER+'\n'), executor=True)
                 self.assertEqual(code, 0 if absent else 1)
                 self.assertIn('snapshot_executor', report)
+                self.assertEqual(events[:2], ['remove', 'verify'])
+                if not absent:
+                    client.request.assert_not_called()
+                else:
+                    self.assertTrue(all(r['cleanup']=='confirmed_absent' for r in report['resources']))
+
+    def test_scheduler_variant_preserves_remote_deletion_gate(self):
+        worker = result(output='PGOS_RESULT={"status":"passed"}\n')
+        for absent in (False, True):
+            with self.subTest(absent=absent):
+                code, report, events, client = self.run_harness(
+                    worker, result(1), result(output='' if absent else CONTAINER+'\n'), scheduler=True)
+                self.assertEqual(code, 0 if absent else 1)
+                self.assertIn('replay_scheduler', report)
                 self.assertEqual(events[:2], ['remove', 'verify'])
                 if not absent:
                     client.request.assert_not_called()

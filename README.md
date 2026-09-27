@@ -93,6 +93,7 @@ record does not replace or edit that canonical plan.
 - [Actual psql/Psycopg completion and warning evidence](docs/client-contract-validation.md)
 - [Commit completion over verified replay publication](docs/publication-commit-spike.md)
 - [Automatic replay discovery and durable retry experiment](docs/replay-scheduler-spike.md)
+- [Live automatic replay, commit wait and SQL validation](docs/live-scheduler-validation.md)
 - [Live LambdaDB compatibility harness and indexed-write barrier](docs/live-compatibility.md)
 - [C/libcurl read transport candidate and validation scope](docs/remote-read-spike.md)
 - [Vector/BM25 Custom Scan executor experiment](docs/executor-spike.md)
