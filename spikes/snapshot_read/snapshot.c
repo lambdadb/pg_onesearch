@@ -14,6 +14,7 @@
 PG_MODULE_MAGIC;
 PG_FUNCTION_INFO_V1(pgos_snapshot_view);
 PG_FUNCTION_INFO_V1(pgos_snapshot_search);
+PG_FUNCTION_INFO_V1(pgos_snapshot_check_health);
 void _PG_init(void);
 static int pause_before_capture;
 static int pause_after_capture;
@@ -130,4 +131,16 @@ Datum
 pgos_snapshot_search(PG_FUNCTION_ARGS)
 {
     PG_RETURN_JSONB_P(run(PG_GETARG_OID(0), PG_GETARG_JSONB_P(1)));
+}
+
+/* Reuse the same fresh operational guard from the bounded Custom Scan. */
+Datum
+pgos_snapshot_check_health(PG_FUNCTION_ARGS)
+{
+    if (!superuser())
+        ereport(ERROR, (errcode(ERRCODE_INSUFFICIENT_PRIVILEGE), errmsg("snapshot probe requires superuser")));
+    SPI_connect();
+    check_health(PG_GETARG_OID(0));
+    SPI_finish();
+    PG_RETURN_VOID();
 }

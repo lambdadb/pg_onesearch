@@ -37,23 +37,27 @@ def remove_container(container, report):
     return False
 
 
-def main():
+def main(*, executor=False):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env-file', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     require(not args.report.exists(), 'Refusing to overwrite a report')
     settings = load_settings(args.env_file)
+    probe = 'snapshot_executor' if executor else 'snapshot_read'
+    directories = ('remote_read', 'index_lifecycle', 'change_capture', 'batch_replay', 'live_compatibility', 'snapshot_read')
+    if executor:
+        directories += ('snapshot_executor',)
     files = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
-             for directory in ('remote_read', 'index_lifecycle', 'change_capture', 'batch_replay', 'live_compatibility', 'snapshot_read')
+             for directory in directories
              for p in sorted((ROOT / 'spikes' / directory).glob('*')) if p.is_file() and p.suffix not in ('.o', '.bc', '.so')}
-    image_id = subprocess.check_output(['docker', 'image', 'inspect', 'pg_onesearch:snapshot-read',
+    image_id = subprocess.check_output(['docker', 'image', 'inspect', 'pg_onesearch:' + probe.replace('_', '-'),
                                         '--format', '{{.Id}}'], text=True).strip()
     # Bind evidence to the built container, not just to the current worktree.
     image_files = json.loads(subprocess.check_output(
         ['docker', 'run', '--rm', '--network', 'none', '--entrypoint', 'python3', image_id, '-c',
          'import hashlib,json,pathlib; print(json.dumps({str(p):hashlib.sha256(p.read_bytes()).hexdigest() '
-         'for directory in ("remote_read", "index_lifecycle", "change_capture", "batch_replay", "live_compatibility", "snapshot_read") for p in pathlib.Path("spikes",directory).glob("*") if p.is_file() '
+         f'for directory in {directories!r} for p in pathlib.Path("spikes",directory).glob("*") if p.is_file() '
          'and p.suffix not in (".o", ".bc", ".so")}))'], text=True))
     require(files == image_files, 'Probe image differs from source; rebuild before live execution')
     report = {'run_id': uuid.uuid4().hex, 'started_at': utc(), 'status': 'running',
@@ -79,17 +83,17 @@ def main():
         # Pipe credentials after container creation, not via -e/--env-file/command args.
         result = subprocess.run(['docker', 'run', '--rm', '-i', '--name', container,
                                  '--platform', 'linux/arm64', '--entrypoint', 'python3',
-                                 image_id, 'spikes/snapshot_read/bootstrap.py'],
+                                 image_id, f'spikes/{probe}/bootstrap.py'],
                                 input=json.dumps({'settings': settings, 'cases': cases, 'owner':report['run_id']}),
                                 text=True, capture_output=True, timeout=1800)
         lines = [line.removeprefix('PGOS_RESULT=') for line in result.stdout.splitlines()
                  if line.startswith('PGOS_RESULT=')]
         require(bool(lines), 'Container returned no redacted probe result')
-        report['snapshot_read'] = json.loads(lines[-1])
-        require(result.returncode == 0 and report['snapshot_read']['status'] == 'passed',
+        report[probe] = json.loads(lines[-1])
+        require(result.returncode == 0 and report[probe]['status'] == 'passed',
                 'Snapshot read comparison failed')
         report['status'] = 'passed'
-        print('PASS: snapshot vector overlay and same-corpus BM25 reads', flush=True)
+        print('PASS: ' + probe + ' vector overlay and same-corpus BM25 reads', flush=True)
     except (ProbeError, KeyboardInterrupt) as exc:
         report['status'] = 'failed'
         report['failure'] = str(exc) if isinstance(exc, ProbeError) else 'Interrupted'
