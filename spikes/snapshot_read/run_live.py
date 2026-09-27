@@ -37,17 +37,20 @@ def remove_container(container, report):
     return False
 
 
-def main(*, executor=False):
+def main(*, executor=False, scheduler=False):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env-file', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     require(not args.report.exists(), 'Refusing to overwrite a report')
     settings = load_settings(args.env_file)
-    probe = 'snapshot_executor' if executor else 'snapshot_read'
+    require(not (executor and scheduler), 'Choose one live probe variant')
+    probe = 'replay_scheduler' if scheduler else ('snapshot_executor' if executor else 'snapshot_read')
     directories = ('remote_read', 'index_lifecycle', 'change_capture', 'batch_replay', 'live_compatibility', 'snapshot_read')
-    if executor:
+    if executor or scheduler:
         directories += ('snapshot_executor',)
+    if scheduler:
+        directories += ('commit_worker', 'publication_commit', 'replay_scheduler')
     files = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
              for directory in directories
              for p in sorted((ROOT / 'spikes' / directory).glob('*')) if p.is_file() and p.suffix not in ('.o', '.bc', '.so')}
@@ -91,9 +94,9 @@ def main(*, executor=False):
         require(bool(lines), 'Container returned no redacted probe result')
         report[probe] = json.loads(lines[-1])
         require(result.returncode == 0 and report[probe]['status'] == 'passed',
-                'Snapshot read comparison failed')
+                'Live probe comparison failed')
         report['status'] = 'passed'
-        print('PASS: ' + probe + ' vector overlay and same-corpus BM25 reads', flush=True)
+        print('PASS: ' + probe + ' live checks', flush=True)
     except (ProbeError, KeyboardInterrupt) as exc:
         report['status'] = 'failed'
         report['failure'] = str(exc) if isinstance(exc, ProbeError) else 'Interrupted'
