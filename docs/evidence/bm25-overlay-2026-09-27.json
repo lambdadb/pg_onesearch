@@ -1,0 +1,335 @@
+{
+  "status": "passed",
+  "scope": "independent local Lucene experiment; no LambdaDB or PostgreSQL execution",
+  "started_at": "2026-09-27T13:34:14.405929+00:00",
+  "finished_at": "2026-09-27T13:34:14.995528+00:00",
+  "source_revision": "edd7e37ac2d3351733829b15fea5b554d2db3cc9",
+  "worktree_dirty": false,
+  "image_id": "sha256:c439180cc220d6679db339636c085f00fde1128526af4c7816c5bc99f8ccb656",
+  "files_sha256": {
+    "OverlayProbe.java": "661baa8298d59129a1bca2c6d95bf5b8a333c8f91af82995a09c4760617ddf30",
+    "Dockerfile": "f811b62b32531ecd8db98aa4405d74be9c7da92793b41ef322c4c13e58f5606c",
+    "SHA256SUMS": "df2d756e4bc111437b2693f267684eb139aa2cd891f987cbe651157d55a2016f",
+    "run.py": "16f71d874c06f083548b6dc084c129bb039619ae4f6d7b466aa3e3384cb06135"
+  },
+  "java": "openjdk version \"25.0.2\" 2026-01-20 LTS\nOpenJDK Runtime Environment Corretto-25.0.2.10.1 (build 25.0.2+10-LTS)\nOpenJDK 64-Bit Server VM Corretto-25.0.2.10.1 (build 25.0.2+10-LTS, mixed mode, sharing)",
+  "lucene_version": "10.4.0",
+  "score_absolute_tolerance": 1e-06,
+  "max_base_physical_documents": 64,
+  "max_effective_documents": 64,
+  "tests": [
+    {
+      "case": "empty_overlay",
+      "status": "passed",
+      "actual": [
+        {
+          "id": "b",
+          "score": 0.38204962
+        },
+        {
+          "id": "a",
+          "score": 0.36074576
+        }
+      ],
+      "oracle": [
+        {
+          "id": "b",
+          "score": 0.38204962
+        },
+        {
+          "id": "a",
+          "score": 0.36074576
+        }
+      ],
+      "visibility_only": [
+        {
+          "id": "b",
+          "score": 0.38204962
+        },
+        {
+          "id": "a",
+          "score": 0.36074576
+        }
+      ],
+      "naive_mismatch": false
+    },
+    {
+      "case": "delete_only",
+      "status": "passed",
+      "actual": [
+        {
+          "id": "a",
+          "score": 0.53744066
+        }
+      ],
+      "oracle": [
+        {
+          "id": "a",
+          "score": 0.53744066
+        }
+      ],
+      "visibility_only": [
+        {
+          "id": "a",
+          "score": 0.36074576
+        }
+      ],
+      "naive_mismatch": true
+    },
+    {
+      "case": "nonmatching_replacement",
+      "status": "passed",
+      "actual": [
+        {
+          "id": "b",
+          "score": 0.59602606
+        }
+      ],
+      "oracle": [
+        {
+          "id": "b",
+          "score": 0.59602606
+        }
+      ],
+      "visibility_only": [
+        {
+          "id": "b",
+          "score": 0.4700503
+        }
+      ],
+      "naive_mismatch": true
+    },
+    {
+      "case": "insert_new_term",
+      "status": "passed",
+      "actual": [
+        {
+          "id": "e",
+          "score": 0.8401784
+        }
+      ],
+      "oracle": [
+        {
+          "id": "e",
+          "score": 0.8401784
+        }
+      ],
+      "visibility_only": [
+        {
+          "id": "e",
+          "score": 0.8401784
+        }
+      ],
+      "naive_mismatch": false
+    },
+    {
+      "case": "replace_frequency_length",
+      "status": "passed",
+      "actual": [
+        {
+          "id": "a",
+          "score": 0.5953419
+        },
+        {
+          "id": "b",
+          "score": 0.5227901
+        },
+        {
+          "id": "c",
+          "score": 0.18772365
+        }
+      ],
+      "oracle": [
+        {
+          "id": "a",
+          "score": 0.5953419
+        },
+        {
+          "id": "b",
+          "score": 0.5227901
+        },
+        {
+          "id": "c",
+          "score": 0.18772365
+        }
+      ],
+      "visibility_only": [
+        {
+          "id": "a",
+          "score": 0.55339307
+        },
+        {
+          "id": "b",
+          "score": 0.4603394
+        },
+        {
+          "id": "c",
+          "score": 0.2705388
+        }
+      ],
+      "naive_mismatch": true
+    },
+    {
+      "case": "mixed_changes",
+      "status": "passed",
+      "actual": [
+        {
+          "id": "e",
+          "score": 0.64383566
+        },
+        {
+          "id": "a",
+          "score": 0.34314215
+        },
+        {
+          "id": "b",
+          "score": 0.34314215
+        }
+      ],
+      "oracle": [
+        {
+          "id": "e",
+          "score": 0.64383566
+        },
+        {
+          "id": "a",
+          "score": 0.34314215
+        },
+        {
+          "id": "b",
+          "score": 0.34314215
+        }
+      ],
+      "visibility_only": [
+        {
+          "id": "e",
+          "score": 0.41014624
+        },
+        {
+          "id": "a",
+          "score": 0.37671039
+        },
+        {
+          "id": "b",
+          "score": 0.37671039
+        }
+      ],
+      "naive_mismatch": true
+    },
+    {
+      "case": "retained_hard_deletes",
+      "status": "passed",
+      "actual": [
+        {
+          "id": "a",
+          "score": 0.53744066
+        }
+      ],
+      "oracle": [
+        {
+          "id": "a",
+          "score": 0.53744066
+        }
+      ],
+      "visibility_only": [
+        {
+          "id": "a",
+          "score": 0.36074576
+        }
+      ],
+      "naive_mismatch": true
+    },
+    {
+      "case": "all_deleted",
+      "status": "passed",
+      "actual": [],
+      "oracle": [],
+      "visibility_only": [],
+      "naive_mismatch": false
+    },
+    {
+      "case": "empty_text_and_unknown_delete",
+      "status": "passed",
+      "actual": [
+        {
+          "id": "b",
+          "score": 0.49662238
+        }
+      ],
+      "oracle": [
+        {
+          "id": "b",
+          "score": 0.49662238
+        }
+      ],
+      "visibility_only": [
+        {
+          "id": "b",
+          "score": 0.38204962
+        }
+      ],
+      "naive_mismatch": true
+    },
+    {
+      "case": "removed_only_term",
+      "status": "passed",
+      "actual": [],
+      "oracle": [],
+      "visibility_only": [],
+      "naive_mismatch": false
+    },
+    {
+      "case": "no_match",
+      "status": "passed",
+      "actual": [],
+      "oracle": [],
+      "visibility_only": [],
+      "naive_mismatch": false
+    },
+    {
+      "case": "outside_old_top_k",
+      "status": "passed",
+      "old_top1": [
+        {
+          "id": "b",
+          "score": 0.6800408
+        }
+      ],
+      "new_top1": [
+        {
+          "id": "a",
+          "score": 0.64383566
+        }
+      ]
+    },
+    {
+      "case": "partition_and_private_requests",
+      "status": "passed",
+      "first": [
+        {
+          "id": "a",
+          "score": 0.59602606
+        },
+        {
+          "id": "e",
+          "score": 0.34314215
+        },
+        {
+          "id": "c",
+          "score": 0.25297338
+        }
+      ],
+      "second": [
+        {
+          "id": "a",
+          "score": 0.59806657
+        }
+      ]
+    },
+    {
+      "case": "bounds_and_failure_cleanup",
+      "status": "passed",
+      "rejections": 3
+    }
+  ]
+}
