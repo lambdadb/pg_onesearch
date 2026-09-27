@@ -1,5 +1,6 @@
 """Small REST transport for the opt-in compatibility experiment (stdlib only)."""
 import gzip
+import http.client
 import io
 import json
 import os
@@ -129,7 +130,7 @@ class Client:
             exc.close()
             # Do not propagate response bodies, signed URLs, headers, or exception repr.
             raise HttpFailure(status) from None
-        except (OSError, urllib.error.URLError):
+        except (OSError, urllib.error.URLError, http.client.HTTPException):
             raise ProbeError('Transport failed; mutation outcome may be unknown') from None
         value, compressed = decode_json(raw, encoding)
         if compressed:

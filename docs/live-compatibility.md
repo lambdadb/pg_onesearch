@@ -148,3 +148,17 @@ Strict snapshots and own writes still require coherent base-plus-delta scoring;
 a tiny committed-corpus BM25 match does not solve that problem. Ranked candidate
 continuation or a proven complete fallback, production replay/worker fencing,
 remote publication coverage, and acceptable commit-wait latency remain open.
+
+## Review hardening after the recorded live run
+
+The offline suite now has 13 tests. Protocol-level HTTP exceptions are converted
+to redacted transport errors, so a broken response while cleaning up one
+collection does not stop attempts for the remaining collections or the final
+report save. Report saves use exclusively created temporary files in the target
+directory and remove them on failure. Regression cases exercise interrupted HTTP
+responses, cleanup continuation/final reporting, concurrent reports with the
+same stem, preservation of an unrelated `.tmp` sibling, and failed replacement.
+
+These error-path and local-filesystem changes were validated offline and in CI;
+the historical live record above still refers to `22c8281` and has not been
+rewritten to imply another authenticated run.

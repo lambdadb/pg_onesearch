@@ -11,6 +11,7 @@ import platform
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 import uuid
 
@@ -370,6 +371,22 @@ class Experiment:
         self.report['resources'] = self.resources
 
 
+def save_report(path, report):
+    # Unique, exclusive creation prevents collisions with siblings or other runs.
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=path.parent,
+                                         prefix=f'.{path.name}.', suffix='.tmp',
+                                         delete=False) as stream:
+            temporary = Path(stream.name)
+            json.dump(report, stream, indent=2)
+            stream.write('\n')
+        temporary.replace(path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env-file', type=Path, help='Explicit dotenv file; otherwise use process environment')
@@ -392,9 +409,7 @@ def main():
     experiment = Experiment(client, report, args.poll_timeout)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     def save():
-        temporary = args.report.with_suffix('.tmp')
-        temporary.write_text(json.dumps(report, indent=2) + '\n')
-        temporary.replace(args.report)
+        save_report(args.report, report)
     experiment.persist = save
     save()
     def interrupted(signum, frame):

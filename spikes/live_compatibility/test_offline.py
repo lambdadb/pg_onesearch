@@ -1,18 +1,115 @@
 """Credential-free safety/contract tests; no remote requests are sent."""
+from concurrent.futures import ThreadPoolExecutor
 import gzip
+import http.client
+import json
+import threading
+import urllib.error
+import urllib.parse
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, MagicMock, patch
 
 from client import Client, HttpFailure, ProbeError, batches, decode_json, encoded, load_settings
-from run import BRANCH, Experiment, MARKER
+from run import BRANCH, Experiment, MARKER, main, save_report
 
 SETTINGS = {'LAMBDADB_BASE_URL':'https://example.invalid',
             'LAMBDADB_PROJECT_NAME':'fixture', 'LAMBDADB_PROJECT_API_KEY':'secret-do-not-forward'}
 
 
 class OfflineTests(unittest.TestCase):
+    def test_protocol_errors_are_redacted_on_open_and_read(self):
+        for error in (http.client.IncompleteRead(b'sensitive-body'),
+                      http.client.BadStatusLine('sensitive-status-line'),
+                      http.client.LineTooLong('sensitive-header')):
+            for stage in ('open', 'read'):
+                with self.subTest(error=type(error).__name__, stage=stage):
+                    client = Client(SETTINGS)
+                    response = MagicMock()
+                    response.__enter__.return_value = response
+                    response.status = 200
+                    response.read.side_effect = error
+                    client.opener.open = Mock(side_effect=error if stage == 'open' else None,
+                                              return_value=response)
+                    with self.assertRaises(ProbeError) as caught:
+                        client.request('GET', '/collections/fixture')
+                    self.assertEqual(str(caught.exception),
+                                     'Transport failed; mutation outcome may be unknown')
+                    self.assertTrue(caught.exception.__suppress_context__)
+
+    def test_cleanup_protocol_failure_continues_and_saves_final_report(self):
+        client = Client(SETTINGS)
+        state = {'deleted':False, 'calls':[]}
+        def setup(experiment):
+            state['owner'] = experiment.report['run_id']
+            experiment.resources.extend([
+                {'name':'healthy','tags':[],'cleanup':'pending'},
+                {'name':'broken','tags':[],'cleanup':'pending'},
+            ])
+            raise ProbeError('Simulated experiment failure')
+        def respond(request, **kwargs):
+            name = urllib.parse.urlsplit(request.full_url).path.rsplit('/',1)[-1]
+            state['calls'].append((request.method, name))
+            response = MagicMock()
+            response.__enter__.return_value = response
+            response.status, response.headers = 200, {}
+            if name == 'broken':
+                response.read.side_effect = http.client.IncompleteRead(b'sensitive-body')
+            elif request.method == 'DELETE':
+                state['deleted'] = True
+                response.read.return_value = b'{}'
+            elif state['deleted']:
+                raise urllib.error.HTTPError(request.full_url, 404, 'absent', {}, None)
+            else:
+                response.read.return_value = encoded({'collection':{'tags':{'pgos-run':state['owner']}}})
+            return response
+        client.opener.open = Mock(side_effect=respond)
+        with tempfile.TemporaryDirectory() as temp:
+            report = Path(temp)/'report.json'
+            with patch('sys.argv', ['run.py','--report',str(report)]), \
+                 patch('run.load_settings', return_value=SETTINGS), \
+                 patch('run.Client', return_value=client), \
+                 patch('run.Experiment.run', setup), patch('run.signal.signal'):
+                self.assertEqual(main(), 1)
+            saved = json.loads(report.read_text())
+            self.assertEqual(saved['status'], 'failed')
+            self.assertIn('finished_at', saved)
+            self.assertEqual([r['cleanup'] for r in saved['resources']],
+                             ['confirmed_absent','unconfirmed'])
+            self.assertEqual(state['calls'], [('GET','broken'),('GET','healthy'),
+                                             ('DELETE','healthy'),('GET','healthy')])
+            self.assertNotIn('sensitive-body', report.read_text())
+
+    def test_report_saves_preserve_sibling_and_concurrent_reports(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            sibling = root/'live.tmp'
+            sibling.write_text('unrelated file')
+            reports = [root/'live.json', root/'live.txt']
+            barrier = threading.Barrier(2)
+            original_replace = Path.replace
+            def simultaneous_replace(source, target):
+                barrier.wait(timeout=5)
+                return original_replace(source, target)
+            with patch.object(Path, 'replace', simultaneous_replace), ThreadPoolExecutor(2) as pool:
+                futures = [pool.submit(save_report, path, {'run':i}) for i,path in enumerate(reports)]
+                for future in futures:
+                    future.result(timeout=10)
+            self.assertEqual(sibling.read_text(), 'unrelated file')
+            self.assertEqual([json.loads(p.read_text()) for p in reports], [{'run':0},{'run':1}])
+            self.assertEqual(set(root.iterdir()), {sibling, *reports})
+
+    def test_failed_report_replace_preserves_old_report_and_removes_temp(self):
+        with tempfile.TemporaryDirectory() as temp:
+            report = Path(temp)/'live.json'
+            report.write_text('{"previous":true}')
+            with patch.object(Path, 'replace', side_effect=OSError('simulated failure')):
+                with self.assertRaises(OSError):
+                    save_report(report, {'replacement':True})
+            self.assertEqual(json.loads(report.read_text()), {'previous':True})
+            self.assertEqual(list(Path(temp).iterdir()), [report])
+
     def test_batch_budget_preserves_multirow_order(self):
         rows = [{'id':str(i), 'value':'x'*50} for i in range(10)]
         result = list(batches(rows, limit=300))
