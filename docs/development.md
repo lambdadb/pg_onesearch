@@ -82,14 +82,15 @@ and host services were not installed or changed.
 | Commit response | The separate probe validates an AFTER_LOCKS candidate for specific PG18.6 schedules, including cancellation. Execute+Flush can deliver CommandComplete before commit; [18 actual-client scenarios](client-contract-validation.md) distinguish execute/commit, warnings, cancellation, and prior transaction errors. Audit cleanup-phase safety and enforce protocol scope before adopting the candidate. See [evidence](commit-worker-spike.md). |
 | Outbox/worker | Atomic capture, savepoints, fenced ordered replay, late smaller IDs, idempotency, readiness barrier, atomic publication/deletion, retention/backpressure and fault tests. |
 | Reads/health | Same-snapshot Tag and delta, own writes, old snapshots, per-index outage guard for cached plans/rescans, recovery races. |
-| Remote protocol | Deployed LambdaDB environment, capability verification, cosine score mapping, continuation beyond rejected candidates, BM25 overlay/statistics, reusable API proposals. No credentials were needed or used here. |
+| Remote protocol | [Live compatibility experiment](live-compatibility.md) adds isolated vector/BM25 fixtures, a final indexed-marker barrier, immutable Tags, and response/score checks. Ranked continuation, production replay coverage, and BM25 overlay/statistics remain gates. The original skeleton required no credentials; the opt-in REST harness uses an ignored environment file. |
 | Identity/lifecycle | Source epochs/index generations, PK/TID/version mapping, HOT/pruning/VACUUM/TID reuse, builds/rebuilds/cleanup and restore fencing. |
 | Release | Maintainer, license, numerical SLOs, pilot workload, compatibility/upgrade formats and distribution policy. Repository visibility is public; branch rulesets remain organization-managed. |
 
 The [SQL/client proposal](sql-client-contract.md) records the next contract stage
 without treating proposed names or client scope as implemented features. Next
-work is a bounded deployed-service compatibility fixture and planner/executor
-proof for both vector and BM25, alongside the unresolved production suitability
-of the AFTER_LOCKS candidate.
+work is planner/executor proof for both vector and BM25, following the
+[bounded live fixture](live-compatibility.md#observed-run--2026-09-27). Ranked
+continuation, strict BM25 overlays, commit-wait latency, and production suitability
+of the AFTER_LOCKS candidate remain unresolved.
 No broader transaction, remote recovery, performance, managed-provider, or production-support claim follows
 from the local skeleton tests.
