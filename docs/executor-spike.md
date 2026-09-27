@@ -105,6 +105,23 @@ they are not emitted in SQL, image metadata, or reports. BM25 is compared with
 the Python reference against the same Tag; vector results are compared with
 ordinary PG cosine queries. Evidence includes actual plans and scan call counts.
 
+## Observed run — 2026-09-27
+
+The [live evidence](evidence/executor-2026-09-27.json) records a passed run at
+10:44:28–10:46:40 UTC from clean commit `ed6e6a9`, with both modules' file hashes
+verified against the pinned image. Three prepared vector executions matched all
+five PG distances/IDs. Four prepared BM25 executions (alpha, beta, gamma, alpha)
+matched same-Tag Python IDs/scores. Correlated rescans returned each term's top
+score; their actual plan recorded three remote queries and three rescans.
+Individual vector/BM25 plans each recorded one remote query. A cached plan
+failed with `55000` under injected unhealthy state and recovered after reset.
+
+Each collection received its five documents in one request, followed by a
+separate final-marker request. Marker-to-verified-Tag waits were 68.874 and
+56.703 seconds; these are fixture observations, not an SLO. Both collections
+and their Tags were removed and collection absence was confirmed. No backend
+deployment revision is pinned by this evidence.
+
 ## Remaining gates
 
 The next product decisions are IAM/index identity and lifecycle; PK/TID/version

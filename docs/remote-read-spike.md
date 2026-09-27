@@ -170,6 +170,10 @@ PG row visibility, own writes, ranked continuation, writes/outbox/fencing, and
 Tag publication are still unimplemented by this candidate. In particular, a
 prepared SQL function call does not prove index rescan or cached-plan safety.
 
+The later, separate [executor experiment](executor-spike.md) adds actual Custom
+Scan plans and scan-owned scores over a frozen fixture. Its bounded rescan and
+prepared-plan checks do not implement a product IAM or mutable-source reads.
+
 ## Source references
 
 - ZomboDB historical C [connection lifetime](https://github.com/zombodb/zombodb/blob/07f850fa7c308f40e9eb1206fc2255bd48384e5f/src/c/rest/curl_support.c)
