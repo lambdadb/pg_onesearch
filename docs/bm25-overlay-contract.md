@@ -95,7 +95,7 @@ oracle construction is an acceptance fixture, not the intended runtime design.
 
 | Fixture | Required observation |
 | --- | --- |
-| Empty overlay | Same membership/scores as the exact base Tag |
+| Empty overlay | Membership must match the base. Score compatibility with ordinary Tag queries versus a new live-corpus scoring mode remains unresolved; see the experiment below. |
 | Matching insert, nonmatching replacement, deletion | New candidate included; both stale matching versions absent |
 | Term-frequency and document-length changes | Scores agree with rebuilt effective corpus |
 | Delete a frequent/rare-term document outside returned top-k | Other scores/ranking reflect new corpus statistics |
@@ -110,3 +110,20 @@ An available endpoint alone will not complete the first-E2E gate: connect it to
 the same registered PG snapshot and test own writes, rollback, committed lag,
 publication races, health, score scope, and source tuple identity in the actual
 executor. Until then only unchanged-corpus BM25 is admitted.
+
+## Executable local follow-up
+
+The [independent Lucene experiment](bm25-overlay-spike.md) exposes a scoring
+choice that must be settled before approving this API: ordinary Tag scores can
+retain statistics for physically deleted postings, whereas the fresh-corpus oracle
+does not. Empty-overlay score compatibility and universal rebuild equivalence
+cannot both be assumed. The original empty-overlay acceptance row above is now
+explicitly marked unresolved; snapshot membership/isolation requirements remain.
+
+The experiment also tests bounded
+request-local replacements/deletes against a rebuilt corpus oracle, including
+negative controls for stale statistics and old-top-k candidate loss. It establishes
+a small local scoring construction, not approval or availability of a LambdaDB
+endpoint. The PG changed-corpus rejection remains in place. Term rewriting when
+all visible occurrences disappear is also part of the contract; correcting only
+score inputs is insufficient for arbitrary query types.

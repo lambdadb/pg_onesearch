@@ -100,6 +100,7 @@ record does not replace or edit that canonical plan.
 - [Statement snapshots, own-write vector reads, and BM25 boundaries](docs/snapshot-read-spike.md)
 - [Snapshot-aware Custom Scan, typed rows, and SQL execution](docs/snapshot-executor-spike.md)
 - [BM25 overlay requirements and proposed server contract (unapproved)](docs/bm25-overlay-contract.md)
+- [Independent Lucene BM25 overlay experiment and scoring limits](docs/bm25-overlay-spike.md)
 
 Run `./scripts/test-commit-worker.sh` for the isolated commit/worker experiment.
 It compiles a separate test-only module in a disposable container. That module

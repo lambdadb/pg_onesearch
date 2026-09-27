@@ -103,7 +103,9 @@ now returns typed heap slots with explicit index/column/key binding, same-snapsh
 row identity checks, SQL filtering/sorting/LIMIT, prepared refresh and rescans.
 It still performs bounded full heap/history scans and rejects changed-corpus BM25.
 The [BM25 overlay contract](bm25-overlay-contract.md) is a server proposal, not an
-approved or available API. Product IAM/Custom Scan activation remains open.
+approved or available API. The [independent Lucene overlay experiment](bm25-overlay-spike.md)
+adds a bounded effective-statistics/oracle proof; it is not server or PG integration.
+Product IAM/Custom Scan activation remains open.
 
 | Area | Required next evidence |
 | --- | --- |
