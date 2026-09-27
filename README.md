@@ -99,6 +99,7 @@ record does not replace or edit that canonical plan.
 - [Fenced batch replay, verified Tags, and atomic publication experiment](docs/batch-replay-spike.md)
 - [Statement snapshots, own-write vector reads, and BM25 boundaries](docs/snapshot-read-spike.md)
 - [Snapshot-aware Custom Scan, typed rows, and SQL execution](docs/snapshot-executor-spike.md)
+- [Snapshot-safe published Tag/Branch retention and retry experiment](docs/retention-spike.md)
 - [BM25 overlay requirements and proposed server contract (unapproved)](docs/bm25-overlay-contract.md)
 - [Independent Lucene BM25 overlay experiment and scoring limits](docs/bm25-overlay-spike.md)
 

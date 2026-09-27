@@ -4,7 +4,7 @@ export PGDATA=/tmp/pgos-snapshot-data PGHOST=/tmp/pgos-snapshot-socket
 export PGPORT=55438 PGUSER=postgres PGDATABASE=postgres
 install -d -o postgres -g postgres "$PGDATA" "$PGHOST"
 trap 'gosu postgres pg_ctl -D "$PGDATA" -m immediate stop >/dev/null 2>&1 || true' EXIT HUP INT TERM
-if [ "${1:-offline}" = offline ]; then
+if [ "${1:-offline}" = offline ] || [ "${1:-offline}" = retention ]; then
     openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj /CN=localhost \
         -addext subjectAltName=DNS:localhost -keyout /tmp/probe.key -out /tmp/probe.crt >/dev/null 2>&1
     export LAMBDADB_BASE_URL=https://localhost:18443 LAMBDADB_PROJECT_NAME=fixture
@@ -25,4 +25,7 @@ gosu postgres psql -X -v ON_ERROR_STOP=1 -f spikes/batch_replay/setup.sql >/dev/
 gosu postgres psql -X -v ON_ERROR_STOP=1 -f spikes/remote_read/setup.sql >/dev/null
 gosu postgres psql -X -v ON_ERROR_STOP=1 -f spikes/snapshot_read/setup.sql >/dev/null
 gosu postgres psql -X -v ON_ERROR_STOP=1 -f spikes/snapshot_executor/setup.sql >/dev/null
+if [ "${1:-offline}" = retention ]; then
+    gosu postgres psql -X -v ON_ERROR_STOP=1 -f spikes/batch_replay/retention.sql >/dev/null
+fi
 /opt/client-venv/bin/python -u "spikes/snapshot_executor/${1:-offline}.py"

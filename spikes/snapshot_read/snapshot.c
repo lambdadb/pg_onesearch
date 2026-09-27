@@ -1,23 +1,46 @@
 /* Test-only statement-snapshot reader. No planner hooks or durable TID cache. */
 #include "postgres.h"
 #include "access/table.h"
+#include "access/transam.h"
+#include "access/xlog.h"
 #include "catalog/index.h"
 #include "catalog/pg_type_d.h"
 #include "executor/spi.h"
 #include "fmgr.h"
 #include "miscadmin.h"
+#include "storage/procarray.h"
 #include "utils/guc.h"
 #include "utils/jsonb.h"
 #include "utils/memutils.h"
 #include "utils/snapmgr.h"
+#include "utils/xid8.h"
 
 PG_MODULE_MAGIC;
 PG_FUNCTION_INFO_V1(pgos_snapshot_view);
 PG_FUNCTION_INFO_V1(pgos_snapshot_search);
 PG_FUNCTION_INFO_V1(pgos_snapshot_check_health);
+PG_FUNCTION_INFO_V1(pgos_retention_horizon);
 void _PG_init(void);
 static int pause_before_capture;
 static int pause_after_capture;
+
+/* Use PostgreSQL's conservative VACUUM horizon, including registered snapshots
+ * and replication slots. A wall-clock age or pg_current_snapshot().xmin alone
+ * cannot prove that another backend has stopped using an older publication. */
+Datum
+pgos_retention_horizon(PG_FUNCTION_ARGS)
+{
+    FullTransactionId next;
+    TransactionId oldest;
+
+    if (!superuser() || !ActiveSnapshotSet() || RecoveryInProgress())
+        ereport(ERROR, (errcode(ERRCODE_OBJECT_NOT_IN_PREREQUISITE_STATE),
+                        errmsg("retention probe requires a superuser primary snapshot")));
+    /* Our active snapshot bounds the horizon at or before this nextFullXid. */
+    next = ReadNextFullTransactionId();
+    oldest = GetOldestNonRemovableTransactionId(NULL);
+    PG_RETURN_FULLTRANSACTIONID(FullTransactionIdFromAllowableAt(next, oldest));
+}
 
 void
 _PG_init(void)

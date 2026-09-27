@@ -82,7 +82,9 @@ leaves the frozen batch recoverable. Retrying creates another Branch from the
 same published base. A stale worker can finish only its own abandoned Branch;
 it cannot write into the winner's Branch, and its publication nonce is rejected.
 This addresses in-flight HTTP requests that a local lease alone cannot revoke.
-There is no automatic cleanup of abandoned or old versions yet.
+The [retention probe](retention-spike.md) can now clean eligible published refs
+after snapshot and replay-parent protection checks. Abandoned attempts and their
+possible parents remain retained; cleanup scheduling is still manual.
 
 The [snapshot reader](snapshot-read-spike.md) and
 [Custom Scan](snapshot-executor-spike.md#replay-failure-and-recovery-coverage) now
@@ -97,7 +99,8 @@ The live harness has exclusive ownership of new temporary collections. The
 installation stamp rejects logical restore to another database; an unfenced
 physical clone and external writers to these Branches remain unsupported.
 REINDEX or DROP during remote work prevents publication and retains retirement
-obligations. This does not implement replacement-index activation or cleanup.
+obligations. The retention probe handles eligible published refs after committed
+retirement, but does not complete collection cleanup or replacement activation.
 
 ## Validation
 

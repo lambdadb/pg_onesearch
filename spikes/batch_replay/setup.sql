@@ -16,8 +16,10 @@ CREATE TABLE pgos_replay_probe.batches (
     active_attempt uuid,
     snapshot_id text,
     snapshot_committed_at bigint,
-    CHECK ((state='pending' AND snapshot_id IS NULL AND snapshot_committed_at IS NULL)
-        OR (state='published' AND active_attempt IS NOT NULL AND length(snapshot_id)>0 AND snapshot_committed_at IS NOT NULL))
+    published_xid xid8,
+    CHECK ((state='pending' AND snapshot_id IS NULL AND snapshot_committed_at IS NULL AND published_xid IS NULL)
+        OR (state='published' AND active_attempt IS NOT NULL AND length(snapshot_id)>0
+            AND snapshot_committed_at IS NOT NULL AND published_xid IS NOT NULL))
 );
 ALTER TABLE pgos_replay_probe.targets ADD FOREIGN KEY(current_batch) REFERENCES pgos_replay_probe.batches;
 CREATE UNIQUE INDEX one_pending_batch ON pgos_replay_probe.batches(generation) WHERE state='pending';
@@ -146,7 +148,8 @@ BEGIN
     IF removed<>covered OR covered=0 THEN
         RAISE EXCEPTION 'outbox coverage changed' USING ERRCODE='55000';
     END IF;
-    UPDATE pgos_replay_probe.batches SET state='published',snapshot_id=snapshot,snapshot_committed_at=committed_at WHERE id=b.id;
+    UPDATE pgos_replay_probe.batches SET state='published',snapshot_id=snapshot,
+      snapshot_committed_at=committed_at,published_xid=pg_current_xact_id() WHERE id=b.id;
     UPDATE pgos_replay_probe.targets SET current_batch=b.id WHERE generation=b.generation;
 END $$;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA pgos_replay_probe FROM PUBLIC;
