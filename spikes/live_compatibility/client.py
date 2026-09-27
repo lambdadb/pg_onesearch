@@ -1,4 +1,6 @@
 """Small REST transport for the opt-in compatibility experiment (stdlib only)."""
+import gzip
+import io
 import json
 import os
 from pathlib import Path
@@ -82,6 +84,23 @@ def batches(items, field='docs', limit=MAX_REQUEST):
         yield batch
 
 
+def decode_json(raw, encoding='identity'):
+    require(len(raw) <= MAX_RESPONSE, 'Response exceeds the experiment budget')
+    require(encoding in ('', 'identity', 'gzip'), 'Unsupported response compression')
+    compressed = encoding == 'gzip' or raw.startswith(b'\x1f\x8b')
+    if compressed:
+        try:
+            with gzip.GzipFile(fileobj=io.BytesIO(raw)) as stream:
+                raw = stream.read(MAX_RESPONSE + 1)
+        except (OSError, EOFError):
+            raise ProbeError('Invalid gzip response') from None
+        require(len(raw) <= MAX_RESPONSE, 'Decompressed response exceeds the experiment budget')
+    try:
+        return json.loads(raw), compressed
+    except (ValueError, UnicodeError):
+        raise ProbeError('Response is not valid JSON') from None
+
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
@@ -95,6 +114,8 @@ class Client:
         self.opener = urllib.request.build_opener(NoRedirect())
         self.calls = 0
         self.downloads = 0
+        self.compressed_responses = 0
+        self.gzip_without_header = 0
 
     def _json(self, request):
         self.calls += 1
@@ -102,6 +123,7 @@ class Client:
             with self.opener.open(request, timeout=self.timeout) as response:
                 status = response.status
                 raw = response.read(MAX_RESPONSE + 1)
+                encoding = response.headers.get("Content-Encoding", "identity").lower().strip()
         except urllib.error.HTTPError as exc:
             status = exc.code
             exc.close()
@@ -109,11 +131,11 @@ class Client:
             raise HttpFailure(status) from None
         except (OSError, urllib.error.URLError):
             raise ProbeError('Transport failed; mutation outcome may be unknown') from None
-        require(len(raw) <= MAX_RESPONSE, 'Response exceeds the experiment budget')
-        try:
-            return status, json.loads(raw)
-        except (ValueError, UnicodeError):
-            raise ProbeError('Response is not valid JSON') from None
+        value, compressed = decode_json(raw, encoding)
+        if compressed:
+            self.compressed_responses += 1
+            self.gzip_without_header += encoding != 'gzip'
+        return status, value
 
     def request(self, method, path, body=None, expected=200):
         require(path.startswith('/collections') and '://' not in path, 'Invalid API path')
@@ -123,6 +145,7 @@ class Client:
                                      headers={'x-api-key': self.key, 'Content-Type': 'application/json'})
         status, result = self._json(req)
         require(status == expected, 'Unexpected success status')
+        require(isinstance(result, dict), 'Malformed API response object')
         return result
 
     def items(self, result):

@@ -1,11 +1,11 @@
 """Credential-free safety/contract tests; no remote requests are sent."""
-import json
+import gzip
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 
-from client import Client, HttpFailure, ProbeError, batches, encoded, load_settings
+from client import Client, HttpFailure, ProbeError, batches, decode_json, encoded, load_settings
 from run import BRANCH, Experiment, MARKER
 
 SETTINGS = {'LAMBDADB_BASE_URL':'https://example.invalid',
@@ -66,6 +66,18 @@ class OfflineTests(unittest.TestCase):
         client._json = failed
         with self.assertRaises(HttpFailure):
             client.items({'isDocsInline':False,'docs':[],'docsUrl':'https://storage.invalid/r'})
+
+    def test_gzip_download_and_expansion_budget(self):
+        raw = gzip.compress(b'[{"doc":{"id":"a"}}]')
+        for encoding in ('gzip', 'identity'):
+            value, compressed = decode_json(raw, encoding)
+            self.assertEqual(value[0]['doc']['id'], 'a')
+            self.assertTrue(compressed)
+        with patch('client.MAX_RESPONSE', 100):
+            with self.assertRaises(ProbeError):
+                decode_json(gzip.compress(b'x'*101), 'gzip')
+        with self.assertRaises(ProbeError):
+            decode_json(b'not gzip', 'gzip')
 
     def test_duplicate_results_rejected(self):
         with self.assertRaises(ProbeError):

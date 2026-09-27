@@ -416,7 +416,9 @@ def main():
         experiment.cleanup()
         if any(r['cleanup'] != 'confirmed_absent' for r in experiment.resources):
             report['status'] = 'failed'
-        report.update(finished_at=utc(), http_calls=client.calls, result_downloads=client.downloads)
+        report.update(finished_at=utc(), http_calls=client.calls, result_downloads=client.downloads,
+                      compressed_responses=client.compressed_responses,
+                      gzip_without_header=client.gzip_without_header)
         save()
     print(f"RESULT: {report['status']}; report: {args.report}", flush=True)
     return 0 if report['status'] == 'passed' else 1
