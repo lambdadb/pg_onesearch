@@ -14,6 +14,7 @@ from psycopg.types.json import Jsonb
 
 REQUESTS = []
 CONNECTIONS = 0
+DOWNLOADS = []
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -35,7 +36,19 @@ class Handler(BaseHTTPRequestHandler):
         payload = json.dumps({'isDocsInline': True, 'docs': [
             {'doc': {'id': 'd1', 'connection': self.connection_id}, 'score': 1.0}]}).encode()
         status, headers = 200, {}
-        if mode == 'slow':
+        if mode.startswith('dl'):
+            destination = mode[2:]
+            link = f'https://localhost:18444/{destination}?signature=sentinel'
+            if destination == 'url':
+                link = body['query']['url']
+            docs = [{'doc': {'id': 'd1'}, 'score': 1}] if destination == 'conflict' else []
+            envelope = {'isDocsInline': False, 'docs': docs, 'docsUrl': link, 'total': 123}
+            if destination == 'nourl':
+                del envelope['docsUrl']
+            payload = json.dumps(envelope).encode()
+            if destination == 'budget':
+                time.sleep(.4)
+        elif mode == 'slow':
             time.sleep(3)
         elif mode == 'disconnect':
             self.connection.shutdown(socket.SHUT_RDWR)
@@ -56,8 +69,6 @@ class Handler(BaseHTTPRequestHandler):
             payload = b'{"private":"sentinel\xff"}'
         elif mode == 'nul':
             payload += b'\x00'
-        elif mode == 'offloaded':
-            payload = b'{"isDocsInline":false,"docs":[],"docsUrl":"https://private.invalid/?sentinel"}'
         elif mode == 'shape':
             payload = b'{"docs":[],"isDocsInline":"true"}'
         elif mode in ('big', 'gzipbig'):
@@ -65,6 +76,67 @@ class Handler(BaseHTTPRequestHandler):
         if mode in ('gzip', 'gzipbig'):
             payload = gzip.compress(payload)
             headers['Content-Encoding'] = 'gzip'
+        self.respond(payload, status, headers)
+
+    def do_GET(self):
+        mode = self.path.split('?', 1)[0][1:]
+        DOWNLOADS.append((mode, dict(self.headers), self.connection_id))
+        docs = [{'doc': {'id': 'd1', 'payload': 'verified'}, 'score': .8},
+                {'doc': {'id': 'd2', 'payload': 'verified'}, 'score': .7}]
+        status, headers = 200, {}
+        if mode == 'empty':
+            docs = []
+        elif mode == 'duplicate':
+            docs = [docs[0], docs[0]]
+        elif mode == 'missingid':
+            del docs[0]['doc']['id']
+        elif mode == 'missingscore':
+            del docs[0]['score']
+        elif mode == 'stringscore':
+            docs[0]['score'] = 'sentinel'
+        elif mode == 'baditem':
+            docs = [1]
+        elif mode == 'object':
+            docs = {'docs': docs}
+        elif mode == 'many':
+            docs = [{'doc': {'id': str(i)}, 'score': 1} for i in range(11)]
+        payload = json.dumps(docs).encode()
+        if mode == 'invalid':
+            payload = b'{"sentinel": broken'
+        elif mode == 'slow':
+            time.sleep(3)
+        elif mode == 'budget':
+            time.sleep(.4)
+        elif mode == 'redirect':
+            status = 302
+            headers['Location'] = 'https://localhost:18444/forbidden?signature=sentinel'
+        elif mode == 'status403':
+            status = 403
+            payload = b'sentinel signed URL expired'
+        elif mode == 'disconnect':
+            self.connection.shutdown(socket.SHUT_RDWR)
+            self.close_connection = True
+            return
+        elif mode == 'truncated':
+            headers['Content-Length'] = str(len(payload) + 50)
+            self.close_connection = True
+        elif mode in ('big', 'gzipbig', 'rawbig'):
+            payload = b' ' * (8 * 1024 * 1024 + 1)
+        elif mode == 'encoding':
+            headers['Content-Encoding'] = 'br'
+        if mode in ('gzip', 'gzipbig', 'rawgzip', 'rawbig', 'broken', 'trailing', 'concat', 'gzipbroken', 'gziptrailing', 'gzipconcat'):
+            payload = gzip.compress(payload)
+            if mode in ('gzip', 'gzipbig', 'gzipbroken', 'gziptrailing', 'gzipconcat'):
+                headers['Content-Encoding'] = 'gzip'
+            if mode in ('broken', 'gzipbroken'):
+                payload = payload[:-6]
+            elif mode in ('trailing', 'gziptrailing'):
+                payload += b'sentinel'
+            elif mode in ('concat', 'gzipconcat'):
+                payload += gzip.compress(b'[]')
+        self.respond(payload, status, headers)
+
+    def respond(self, payload, status, headers):
         try:
             self.send_response(status)
             self.send_header('Content-Type', 'application/json')
@@ -135,8 +207,103 @@ class TransportTests(unittest.TestCase):
             with self.subTest(mode=mode):
                 self.failure(mode, '22000')
 
-    def test_offloaded_results_fail_explicitly(self):
-        self.failure('offloaded', '0A000')
+    def test_download_hydration_and_credential_isolation(self):
+        for mode in ('plain', 'gzip', 'rawgzip', 'empty'):
+            with self.subTest(mode=mode):
+                result = query(self.conn, 'dl' + mode)
+                self.assertTrue(result['isDocsInline'])
+                self.assertTrue(result['wasOffloaded'])
+                self.assertNotIn('docsUrl', result)
+                self.assertEqual(result['total'], 123)  # Preserve metadata; not a coverage claim.
+                self.assertEqual(len(result['docs']), 0 if mode == 'empty' else 2)
+                headers = {k.lower(): v for k, v in DOWNLOADS[-1][1].items()}
+                for name in ('x-api-key', 'authorization', 'cookie', 'referer'):
+                    self.assertNotIn(name, headers)
+        self.assertEqual(len({x[2] for x in DOWNLOADS[-4:]}), 4)
+        self.assertFalse(query(self.conn)['wasOffloaded'])
+
+    def download_failure(self, mode, state):
+        before = len(DOWNLOADS)
+        self.failure('dl' + mode, state)
+        self.assertEqual(len(DOWNLOADS), before + 1)
+
+    def test_same_origin_download_isolated_from_api_connection(self):
+        api_connection = query(self.conn)['docs'][0]['doc']['connection']
+        result = query(self.conn, 'dlurl', value={'url': 'https://localhost:18443/plain?signature=sentinel'})
+        self.assertTrue(result['wasOffloaded'])
+        self.assertNotEqual(DOWNLOADS[-1][2], api_connection)
+        headers = {k.lower(): v for k, v in DOWNLOADS[-1][1].items()}
+        self.assertNotIn('x-api-key', headers)
+        self.assertEqual(query(self.conn)['docs'][0]['doc']['connection'], api_connection)
+
+    def test_download_errors_and_recovery(self):
+        for mode in ('redirect', 'status403', 'disconnect', 'truncated'):
+            with self.subTest(mode=mode):
+                self.download_failure(mode, '08006')
+
+    def test_download_payload_validation(self):
+        for mode in ('invalid', 'broken', 'trailing', 'concat', 'gzipbroken', 'gziptrailing',
+                     'gzipconcat', 'encoding', 'duplicate', 'missingid',
+                     'missingscore', 'stringscore', 'baditem', 'object', 'many'):
+            with self.subTest(mode=mode):
+                self.download_failure(mode, '22000')
+
+    def test_download_limits(self):
+        for mode in ('big', 'gzipbig', 'rawbig'):
+            with self.subTest(mode=mode):
+                self.download_failure(mode, '54000')
+
+    def test_download_url_and_envelope_validation(self):
+        before = len(DOWNLOADS)
+        for url in ('http://localhost:18444/plain', 'https://user:secret@localhost:18444/plain',
+                    'https://localhost:18444/plain#sentinel', 'file:///tmp/probe.key'):
+            with self.assertRaises(psycopg.errors.InvalidParameterValue):
+                query(self.conn, 'dlurl', value={'url': url})
+        for mode in ('dlconflict', 'dlnourl'):
+            self.failure(mode, '22000')
+        self.assertEqual(len(DOWNLOADS), before)
+
+    def test_download_shares_query_deadline(self):
+        self.conn.execute('SET pgos_remote_probe.timeout_ms = 650')
+        started = time.monotonic()
+        self.download_failure('budget', '08006')
+        self.assertLess(time.monotonic() - started, 1.5)
+
+    def test_download_cancel_and_savepoint_recovery(self):
+        self.conn.execute('BEGIN')
+        self.conn.execute('SAVEPOINT before_download')
+        timer = threading.Timer(.2, self.conn.cancel)
+        timer.start()
+        started = time.monotonic()
+        try:
+            with self.assertRaises(psycopg.errors.QueryCanceled):
+                query(self.conn, 'dlslow')
+        finally:
+            timer.join()
+        self.assertLess(time.monotonic() - started, 1.5)
+        self.conn.execute('ROLLBACK TO before_download')
+        query(self.conn, 'dlplain')
+        self.conn.execute('COMMIT')
+
+    def test_download_repeated_errors_release_sockets(self):
+        query(self.conn)
+        fds = Path(f'/proc/{self.conn.info.backend_pid}/fd')
+        before = len(list(fds.iterdir()))
+        for _ in range(20):
+            self.download_failure('truncated', '08006')
+        self.assertLessEqual(len(list(fds.iterdir())), before + 2)
+
+    def test_download_tls_verification(self):
+        for name in ('untrusted', 'mismatch'):
+            invalid = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            invalid.load_cert_chain(f'/tmp/{name}.crt', f'/tmp/{name}.key')
+            download_server.context = invalid
+            before = len(DOWNLOADS)
+            try:
+                self.failure('dlplain', '08006')
+                self.assertEqual(len(DOWNLOADS), before)
+            finally:
+                download_server.context = context
 
     def test_gzip(self):
         self.assertEqual(query(self.conn, 'gzip')['docs'][0]['doc']['id'], 'd1')
@@ -253,10 +420,15 @@ if __name__ == '__main__':
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     context.load_cert_chain('/tmp/probe.crt', '/tmp/probe.key')
     server.context = context
+    download_server = Server(('127.0.0.1', 18444), Handler)
+    download_server.context = context
+    threading.Thread(target=download_server.serve_forever, daemon=True).start()
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
         unittest.main(verbosity=2)
     finally:
+        download_server.shutdown()
+        download_server.server_close()
         server.shutdown()
         server.server_close()
