@@ -81,6 +81,10 @@ jobs:
         run: |
           set -o pipefail
           ./scripts/test-publication-commit.sh --reuse-executor-image 2>&1 | tee /tmp/pg_onesearch-publication-commit.log
+      - name: Automatic replay scheduling and durable retry
+        run: |
+          set -o pipefail
+          ./scripts/test-replay-scheduler.sh --reuse-completion-image 2>&1 | tee /tmp/pg_onesearch-replay-scheduler.log
       - name: Record build inputs
         run: |
           git rev-parse HEAD > artifacts/source-revision.txt
@@ -95,6 +99,7 @@ jobs:
           cp /tmp/pg_onesearch-snapshot-executor.log artifacts/snapshot-executor.log
           cp /tmp/pg_onesearch-retention.log artifacts/retention.log
           cp /tmp/pg_onesearch-publication-commit.log artifacts/publication-commit.log
+          cp /tmp/pg_onesearch-replay-scheduler.log artifacts/replay-scheduler.log
           cp /tmp/pg_onesearch-bm25-overlay.log artifacts/bm25-overlay.log
           cp /tmp/pg_onesearch-bm25-overlay.json artifacts/bm25-overlay.json
           docker image inspect pg_onesearch:0.1.0-dev --format '{{.Id}}' > artifacts/image-id.txt
