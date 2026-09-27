@@ -81,10 +81,15 @@ and restricted SQL wrapper are separate from the product extension. It does not
 close the planner/executor, strict-read, remote-write, or production credential
 gates below.
 
+The [Custom Scan experiment](executor-spike.md) now exercises vector and BM25
+through actual PG plans, with scan-owned scores, prepared statements, and
+correlated rescans. It is limited to a frozen five-row fixture; it does not
+implement an index access method, mutable-source synchronization, or own writes.
+
 | Area | Required next evidence |
 | --- | --- |
 | First E2E milestone | Both remote vector and BM25 indexes, actual index plans, mutation/search reference comparisons, source retention across index lifecycle. BM25 remains in this milestone. |
-| BM25 SQL | [Concrete SQL proposal](sql-client-contract.md) now specifies match/score binding and bounded query shapes. Names remain proposed; planner proof, analyzer fixtures, and corpus/overlay statistics remain open. |
+| BM25 SQL | [Concrete SQL proposal](sql-client-contract.md) specifies match/score binding and bounded query shapes. The isolated [Custom Scan proof](executor-spike.md) binds scores to execution state; product index binding, analyzer fixtures, and corpus/overlay statistics remain open. |
 | Commit response | The separate probe validates an AFTER_LOCKS candidate for specific PG18.6 schedules, including cancellation. Execute+Flush can deliver CommandComplete before commit; [18 actual-client scenarios](client-contract-validation.md) distinguish execute/commit, warnings, cancellation, and prior transaction errors. Audit cleanup-phase safety and enforce protocol scope before adopting the candidate. See [evidence](commit-worker-spike.md). |
 | Outbox/worker | Atomic capture, savepoints, fenced ordered replay, late smaller IDs, idempotency, readiness barrier, atomic publication/deletion, retention/backpressure and fault tests. |
 | Reads/health | Same-snapshot Tag and delta, own writes, old snapshots, per-index outage guard for cached plans/rescans, recovery races. |
@@ -93,9 +98,9 @@ gates below.
 | Release | Maintainer, license, numerical SLOs, pilot workload, compatibility/upgrade formats and distribution policy. Repository visibility is public; branch rulesets remain organization-managed. |
 
 The [SQL/client proposal](sql-client-contract.md) records the next contract stage
-without treating proposed names or client scope as implemented features. Next
-work is planner/executor proof for both vector and BM25, following the
-[bounded live fixture](live-compatibility.md#observed-run--2026-09-27). Ranked
+without treating proposed names or client scope as implemented features. The
+bounded planner/executor proof is separate from the next product work on index
+identity/lifecycle and snapshot-correct reads. Ranked
 continuation, strict BM25 overlays, commit-wait latency, and production suitability
 of the AFTER_LOCKS candidate remain unresolved.
 No broader transaction, remote recovery, performance, managed-provider, or production-support claim follows

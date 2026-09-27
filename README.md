@@ -93,6 +93,7 @@ record does not replace or edit that canonical plan.
 - [Actual psql/Psycopg completion and warning evidence](docs/client-contract-validation.md)
 - [Live LambdaDB compatibility harness and indexed-write barrier](docs/live-compatibility.md)
 - [C/libcurl read transport candidate and validation scope](docs/remote-read-spike.md)
+- [Vector/BM25 Custom Scan executor experiment](docs/executor-spike.md)
 
 Run `./scripts/test-commit-worker.sh` for the isolated commit/worker experiment.
 It compiles a separate test-only module in a disposable container. That module

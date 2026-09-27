@@ -155,6 +155,12 @@ not a proven planner design. Function volatility, parallel safety, costs,
 operator strategy registration, and plan recognition remain implementation
 questions. No speculative SQL stubs are installed by this PR.
 
+The later [Custom Scan experiment](executor-spike.md) installs probe-only
+functions in a disposable cluster. Its score argument identifies the fixed
+fixture **table**, not a product index, and its vector path requires an explicit
+probe predicate. It validates executor state and rescans without implementing
+the proposed product signatures above.
+
 Proposed initial query meaning: plain text analyzed with the index's `standard`
 analyzer, optional/OR matching among resulting terms, query syntax disabled
 (`skipSyntax=true` in the remote query-string mapping). Reject empty/whitespace

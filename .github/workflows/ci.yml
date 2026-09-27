@@ -43,12 +43,17 @@ jobs:
           ./scripts/test-remote-read.sh 2>&1 | tee /tmp/pg_onesearch-remote-read.log
       - name: Install bundle on clean PostgreSQL runtime
         run: ./scripts/test-package.sh
+      - name: Custom Scan executor experiment
+        run: |
+          set -o pipefail
+          ./scripts/test-executor.sh --reuse-transport-image 2>&1 | tee /tmp/pg_onesearch-executor.log
       - name: Record build inputs
         run: |
           git rev-parse HEAD > artifacts/source-revision.txt
           cp /tmp/pg_onesearch-commit-worker.log artifacts/commit-worker-probe.log
           cp /tmp/pg_onesearch-client-contract.log artifacts/client-contract.log
           cp /tmp/pg_onesearch-remote-read.log artifacts/remote-read.log
+          cp /tmp/pg_onesearch-executor.log artifacts/executor.log
           docker image inspect pg_onesearch:0.1.0-dev --format '{{.Id}}' > artifacts/image-id.txt
           docker run --rm --network none --entrypoint sh pg_onesearch:0.1.0-dev \
             -c 'pg_config --version; gcc --version; dpkg-query -W' > artifacts/build-environment.txt
