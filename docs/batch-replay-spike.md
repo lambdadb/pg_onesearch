@@ -164,3 +164,11 @@ statement-bound Tag/delta/heap reads, captured revision identity, vector own wri
 and same-corpus BM25 reads; changed-corpus BM25 is explicitly rejected. The real executor and commit-response
 probes can then consume that state without treating an ACK or a published Tag
 alone as proof of a healthy, snapshot-correct search.
+
+## Commit completion integration
+
+The optional [publication completion probe](publication-commit-spike.md) records
+exact source-transaction membership and observes these committed batch receipts
+across all affected generations before releasing a commit waiter. It preserves
+the existing batching, marker/Tag checks and fencing protocol. The observer is
+not an automatic replay scheduler, and integrated evidence remains offline.

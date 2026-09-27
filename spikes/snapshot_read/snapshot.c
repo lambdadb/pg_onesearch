@@ -82,11 +82,16 @@ check_health(Oid index)
         "WHERE g.index_oid=$1 AND g.state='capturing' AND h.healthy "
         "AND b.state='published' AND NOT EXISTS ("
         "SELECT FROM pgos_replay_probe.batches pending "
-        "WHERE pending.generation=g.generation AND pending.state='pending'))",
+        "WHERE pending.generation=g.generation AND pending.state='pending') "
+        "AND NOT EXISTS (SELECT FROM pgos_snapshot_probe.pending_commits c "
+        "WHERE c.generation=g.generation "
+        "AND c.writer_xid IS DISTINCT FROM pg_current_xact_id_if_assigned()))",
         1, types, args, GetLatestSnapshot(), &isnull);
 
     /* A committed claim fences reads before remote I/O, even if its worker dies.
      * Publication clears pending state and advances the head in one transaction.
+     * Optional completion membership also fences the source-commit/claim gap.
+     * Exclude own uncommitted requirements; statement assembly handles those.
      * The test flag can veto readiness, but cannot bypass this durable gate. */
     if (isnull || !DatumGetBool(ok))
         ereport(ERROR, (errcode(ERRCODE_OBJECT_NOT_IN_PREREQUISITE_STATE),

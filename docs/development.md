@@ -69,6 +69,15 @@ published refs of committed retired generations. Abandoned attempts, collection
 deletion, audit compaction and production scheduling remain deferred; local
 fixtures do not establish live service deletion or physical storage reclamation.
 
+The [publication completion increment](publication-commit-spike.md) connects the
+bounded commit callback to actual replay publication through durable exact event
+requirements across affected generations. A separate observer reconciles
+committed coverage after notification loss, and optional reader gating covers
+the source-commit/claim gap. Offline integration tests include timeout, ambiguous
+ACKs, partial publication, process termination and PG restart. This does not
+adopt the hook for production or add automatic replay scheduling; the Python
+adapter, live integration, supported lifecycle, scale and release gates remain open.
+
 ## Confirmed requirements from the handoff
 
 - Extension/repository identifier: `pg_onesearch`; no required pgvector extension.

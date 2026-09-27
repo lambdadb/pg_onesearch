@@ -148,7 +148,10 @@ Deliberate fixture limits:
   asserts the probe shared library is absent; normal CREATE EXTENSION still
   loads only the vector skeleton.
 
-The next implementation work remains the vector and BM25 SQL/execution
-contracts plus remote API/readiness/overlay gaps. BM25 stays in the first E2E
-milestone. Production capture and worker integration should follow the protocol
-and callback decisions above, with the same fault schedules carried forward.
+The optional [publication completion integration](publication-commit-spike.md)
+now reuses these callbacks with exact captured event membership and committed
+replay/Tag publication, plus a separate durable-status observer. The original
+mock fixture and its limits above remain unchanged; the integration is offline
+evidence and does not adopt AFTER_LOCKS for production. Follow the current
+[accepted stabilization scope](development.md#accepted-stabilization-scope--2026-09-27)
+for the restricted BM25 boundary and remaining product gates.
