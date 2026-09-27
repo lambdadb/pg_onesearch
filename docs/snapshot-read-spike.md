@@ -158,7 +158,16 @@ fresh owned vector/BM25 collections, drives real replay, and exercises SQL reads
 before/after own writes, rollback, committed lag, and republishing. C BM25 results
 are compared to Python REST results from the exact same Tag; vector results are
 compared to local PG cosine. It also checks prepared health failure and a healthy
-sibling. Version/collection cleanup is ownership-checked, with final absence
+sibling. Before remote cleanup, the host forces removal of the worker container and then
+requires a successful daemon container listing that proves its exact name absent.
+An already-absent `--rm` container is accepted even if `docker rm` returns nonzero.
+If removal or verification leaves absence unconfirmed, the final report records
+the container name and deferred resource cleanup; remote resources are retained
+until the worker is confirmed absent. No daemon stdout/stderr is saved in the report.
+Eight credential-free cleanup regression tests cover these failure paths and the
+remote-deletion gate. Run them with
+`python3 -m unittest discover -s spikes/snapshot_read -p test_cleanup.py -v`.
+Version/collection cleanup is then ownership-checked, with final absence
 confirmation. No deployed server revision is pinned by this harness.
 
 ### Live result, 2026-09-27

@@ -25,6 +25,8 @@ jobs:
           persist-credentials: false
       - name: Live harness safety checks (offline)
         run: python3 -m unittest discover -s spikes/live_compatibility -p test_offline.py -v
+      - name: Snapshot live cleanup safety checks (offline)
+        run: python3 -m unittest discover -s spikes/snapshot_read -p test_cleanup.py -v
       - name: Build, install, and test
         run: ./scripts/test.sh
       - name: Commit and worker feasibility probe
