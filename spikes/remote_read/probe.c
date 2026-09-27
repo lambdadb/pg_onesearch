@@ -8,6 +8,7 @@
 #include "mb/pg_wchar.h"
 #include "miscadmin.h"
 #include "nodes/miscnodes.h"
+#include "portability/instr_time.h"
 #include "utils/builtins.h"
 #include "utils/guc.h"
 #include "utils/json.h"
@@ -45,7 +46,7 @@ check_name(const char *name)
 }
 
 static void
-check_origin(const char *origin)
+check_url(const char *origin, bool download)
 {
     CURLU *url = curl_url();
     char *part = NULL;
@@ -60,7 +61,8 @@ check_origin(const char *origin)
         valid = strcmp(part, "https") == 0;
         curl_free(part);
         part = NULL;
-        if (curl_url_get(url, CURLUPART_PATH, &part, 0) != CURLUE_OK || strcmp(part, "/") != 0)
+        if (curl_url_get(url, CURLUPART_PATH, &part, 0) != CURLUE_OK ||
+            (!download && strcmp(part, "/") != 0))
             valid = false;
         curl_free(part);
         part = NULL;
@@ -68,7 +70,7 @@ check_origin(const char *origin)
             valid = false;
         curl_free(part);
         part = NULL;
-        if (curl_url_get(url, CURLUPART_QUERY, &part, 0) == CURLUE_OK)
+        if (curl_url_get(url, CURLUPART_QUERY, &part, 0) == CURLUE_OK && !download)
             valid = false;
         curl_free(part);
         part = NULL;
@@ -78,7 +80,7 @@ check_origin(const char *origin)
     }
     curl_url_cleanup(url);
     if (!valid)
-        ereport(ERROR, (errcode(ERRCODE_INVALID_PARAMETER_VALUE), errmsg("remote base URL must be an HTTPS origin")));
+        ereport(ERROR, (errcode(ERRCODE_INVALID_PARAMETER_VALUE), errmsg("invalid remote HTTPS URL")));
 }
 
 static JsonbValue *
@@ -90,6 +92,122 @@ field(Jsonb *object, const char *name)
     key.val.string.val = (char *) name;
     key.val.string.len = strlen(name);
     return findJsonbValueFromContainer(&object->root, JB_FOBJECT, &key);
+}
+
+static int
+remaining_timeout(instr_time started)
+{
+    instr_time elapsed;
+    int remaining;
+
+    CHECK_FOR_INTERRUPTS();
+    INSTR_TIME_SET_CURRENT(elapsed);
+    INSTR_TIME_SUBTRACT(elapsed, started);
+    remaining = timeout_ms - (int) INSTR_TIME_GET_MILLISEC(elapsed);
+    if (remaining <= 0)
+        ereport(ERROR, (errcode(ERRCODE_CONNECTION_FAILURE), errmsg("remote query deadline exceeded")));
+    return remaining;
+}
+
+static Jsonb *
+parse_response(char *response)
+{
+    Datum parsed;
+    ErrorSaveContext errors = {T_ErrorSaveContext};
+
+    /* Never include remote JSON tokens in parser diagnostics. */
+    if (!pg_verify_mbstr(PG_UTF8, response, strlen(response), true) ||
+        !DirectInputFunctionCallSafe(jsonb_in, response, InvalidOid, -1, (Node *) &errors, &parsed))
+        ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("remote response is not valid JSON")));
+    return DatumGetJsonbP(parsed);
+}
+
+static void
+validate_docs(Jsonb *docs, int size)
+{
+    JsonbIterator *iterator;
+    JsonbIteratorToken token;
+    JsonbValue item;
+    JsonbValue *ids[100];
+    int count = 0;
+
+    if (!JB_ROOT_IS_ARRAY(docs) || JB_ROOT_IS_SCALAR(docs) || JB_ROOT_COUNT(docs) > size)
+        ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("invalid remote result array")));
+    iterator = JsonbIteratorInit(&docs->root);
+    while ((token = JsonbIteratorNext(&iterator, &item, true)) != WJB_DONE)
+    {
+        Jsonb *object;
+        JsonbValue *doc;
+        JsonbValue *id;
+        JsonbValue *score;
+        int i;
+
+        if (token != WJB_ELEM)
+            continue;
+        CHECK_FOR_INTERRUPTS();
+        if (item.type != jbvBinary || !JsonContainerIsObject(item.val.binary.data))
+            ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("invalid remote result item")));
+        object = JsonbValueToJsonb(&item);
+        doc = field(object, "doc");
+        score = field(object, "score");
+        if (!doc || doc->type != jbvBinary || !JsonContainerIsObject(doc->val.binary.data) ||
+            !score || score->type != jbvNumeric)
+            ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("invalid remote document or score")));
+        id = field(JsonbValueToJsonb(doc), "id");
+        if (!id || id->type != jbvString || !id->val.string.len)
+            ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("invalid remote document identity")));
+        for (i = 0; i < count; i++)
+            if (ids[i]->val.string.len == id->val.string.len &&
+                memcmp(ids[i]->val.string.val, id->val.string.val, id->val.string.len) == 0)
+                ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("duplicate remote document identity")));
+        ids[count++] = id;
+    }
+}
+
+static Jsonb *
+hydrate_result(Jsonb *result, int size, instr_time started)
+{
+    JsonbValue *inline_docs;
+    JsonbValue *docs_value;
+    Jsonb *docs;
+    Jsonb *patch;
+    StringInfoData normalized;
+    bool offloaded;
+
+    if (!JB_ROOT_IS_OBJECT(result))
+        ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("invalid remote query envelope")));
+    inline_docs = field(result, "isDocsInline");
+    docs_value = field(result, "docs");
+    if (!inline_docs || inline_docs->type != jbvBool || !docs_value || docs_value->type != jbvBinary ||
+        !JsonContainerIsArray(docs_value->val.binary.data))
+        ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("invalid remote query envelope")));
+    offloaded = !inline_docs->val.boolean;
+    docs = JsonbValueToJsonb(docs_value);
+    if (offloaded)
+    {
+        JsonbValue *link = field(result, "docsUrl");
+        char *url;
+        char *response;
+
+        if (JB_ROOT_COUNT(docs) != 0 || !link || link->type != jbvString ||
+            link->val.string.len == 0 || link->val.string.len > 16384)
+            ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("invalid remote download envelope")));
+        url = pnstrdup(link->val.string.val, link->val.string.len);
+        check_url(url, true);
+        response = pgos_http_get(url, remaining_timeout(started), getenv("PGOS_PROBE_CA_FILE"));
+        docs = parse_response(response);
+    }
+    validate_docs(docs, size);
+    /* Preserve API metadata, replace docs, and never return signed URLs to SQL.
+     * wasOffloaded is probe-only evidence that the C download path was used. */
+    initStringInfo(&normalized);
+    appendStringInfo(&normalized, "{\"isDocsInline\":true,\"wasOffloaded\":%s,\"docs\":%s}",
+                     offloaded ? "true" : "false", JsonbToCString(NULL, &docs->root, VARSIZE(docs)));
+    patch = parse_response(normalized.data);
+    result = DatumGetJsonbP(DirectFunctionCall2(jsonb_concat, JsonbPGetDatum(result), JsonbPGetDatum(patch)));
+    result = DatumGetJsonbP(DirectFunctionCall2(jsonb_delete, JsonbPGetDatum(result), CStringGetTextDatum("docsUrl")));
+    (void) remaining_timeout(started);
+    return result;
 }
 
 Datum
@@ -105,11 +223,8 @@ pgos_remote_query(PG_FUNCTION_ARGS)
     StringInfoData body;
     char *url;
     char *response;
-    Datum parsed;
     Jsonb *result;
-    JsonbValue *inline_docs;
-    JsonbValue *docs;
-    ErrorSaveContext errors = {T_ErrorSaveContext};
+    instr_time started;
 
     if (!superuser())
         ereport(ERROR, (errcode(ERRCODE_INSUFFICIENT_PRIVILEGE), errmsg("remote probe requires superuser")));
@@ -118,7 +233,7 @@ pgos_remote_query(PG_FUNCTION_ARGS)
     if (!origin || !project || !key || !key[0] || strlen(key) > 8192 ||
         strpbrk(key, "\r\n"))
         ereport(ERROR, (errcode(ERRCODE_INVALID_PARAMETER_VALUE), errmsg("invalid remote connection settings")));
-    check_origin(origin);
+    check_url(origin, false);
     check_name(project);
     collection = text_to_cstring(PG_GETARG_TEXT_PP(0));
     tag = text_to_cstring(PG_GETARG_TEXT_PP(1));
@@ -135,21 +250,8 @@ pgos_remote_query(PG_FUNCTION_ARGS)
     escape_json(&body, tag);
     appendStringInfo(&body, "},\"size\":%d,\"includeVectors\":true,\"query\":%s}",
                      size, JsonbToCString(NULL, &query->root, VARSIZE(query)));
-    response = pgos_http_post(url, key, body.data, timeout_ms, getenv("PGOS_PROBE_CA_FILE"));
-    /* Soft JSON errors prevent response tokens/URLs from leaking in PG diagnostics. */
-    if (!pg_verify_mbstr(PG_UTF8, response, strlen(response), true) ||
-        !DirectInputFunctionCallSafe(jsonb_in, response, InvalidOid, -1, (Node *) &errors, &parsed))
-        ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("remote response is not valid JSON")));
-    result = DatumGetJsonbP(parsed);
-    if (!JB_ROOT_IS_OBJECT(result))
-        ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("invalid remote query envelope")));
-    inline_docs = field(result, "isDocsInline");
-    docs = field(result, "docs");
-    if (!inline_docs || inline_docs->type != jbvBool || !docs || docs->type != jbvBinary ||
-        !JsonContainerIsArray(docs->val.binary.data))
-        ereport(ERROR, (errcode(ERRCODE_DATA_EXCEPTION), errmsg("invalid remote query envelope")));
-    if (!inline_docs->val.boolean)
-        ereport(ERROR, (errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
-                        errmsg("offloaded query results are not supported by this probe")));
+    INSTR_TIME_SET_CURRENT(started);
+    response = pgos_http_post(url, key, body.data, remaining_timeout(started), getenv("PGOS_PROBE_CA_FILE"));
+    result = hydrate_result(parse_response(response), size, started);
     PG_RETURN_JSONB_P(result);
 }

@@ -19,6 +19,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env-file', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
+    parser.add_argument('--large-results', action='store_true', help='Also verify C download of 100 large documents')
     args = parser.parse_args()
     require(not args.report.exists(), 'Refusing to overwrite a report')
     settings = load_settings(args.env_file)
@@ -54,15 +55,32 @@ def main():
             experiment.write(resource, 'upsert', list(fixtures().values()))
             ref = experiment.barrier(resource, 'c-read')
             query = knn(k=10) if role == 'vector' else text_query('alpha')
-            _, docs = experiment.query(resource, query, ref, size=10, includeVectors=True)
+            response, docs = experiment.query(resource, query, ref, size=10, includeVectors=True)
             cases.append({'role': role, 'collection': resource['name'], 'tag': ref['name'],
-                          'query': query, 'scores': experiment.scores(docs)})
+                          'query': query, 'scores': experiment.scores(docs),
+                          'size': 10, 'offloaded': not response['isDocsInline']})
+            if role == 'bm25' and args.large_results:
+                payload = 'x' * 80000
+                rows = [{'id': f'large-{i:03}', 'content': 'payload alpha',
+                         'cohort': 'large', 'payload': payload} for i in range(100)]
+                experiment.write(resource, 'upsert', rows)
+                large_ref = experiment.barrier(resource, 'c-download')
+                response, docs = experiment.query(resource, text_query('payload'), large_ref, size=100)
+                require(not response['isDocsInline'] and len(docs) == 100,
+                        'Large fixture must exercise an offloaded 100-result response')
+                require(all(item['doc'].get('payload') == payload for item in docs),
+                        'Python reference payload mismatch')
+                cases.append({'role': 'bm25-download', 'collection': resource['name'],
+                              'tag': large_ref['name'], 'query': text_query('payload'),
+                              'scores': experiment.scores(docs), 'size': 100, 'offloaded': True,
+                              'payload_length': len(payload),
+                              'payload_sha256': hashlib.sha256(payload.encode()).hexdigest()})
         # Pipe credentials after container creation, not via -e/--env-file/command args.
         result = subprocess.run(['docker', 'run', '--rm', '-i', '--name', container,
                                  '--platform', 'linux/arm64', '--entrypoint', 'python3',
                                  image_id, 'spikes/remote_read/bootstrap.py'],
                                 input=json.dumps({'settings': settings, 'cases': cases}),
-                                text=True, capture_output=True, timeout=240)
+                                text=True, capture_output=True, timeout=360)
         lines = [line.removeprefix('PGOS_RESULT=') for line in result.stdout.splitlines()
                  if line.startswith('PGOS_RESULT=')]
         require(bool(lines), 'Container returned no redacted probe result')
