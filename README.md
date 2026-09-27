@@ -96,6 +96,7 @@ record does not replace or edit that canonical plan.
 - [Vector/BM25 Custom Scan executor experiment](docs/executor-spike.md)
 - [IAM generation, DDL rollback, and recovery experiment](docs/index-lifecycle-spike.md)
 - [Durable registry and atomic change capture experiment](docs/change-capture-spike.md)
+- [Fenced batch replay, verified Tags, and atomic publication experiment](docs/batch-replay-spike.md)
 
 Run `./scripts/test-commit-worker.sh` for the isolated commit/worker experiment.
 It compiles a separate test-only module in a disposable container. That module
